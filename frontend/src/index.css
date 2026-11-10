@@ -1,0 +1,408 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --midnight-bg: #080B10;
+    --midnight-secondary: #111722;
+    --midnight-glass: rgba(41, 52, 61, 0.58);
+    --midnight-elevated: rgba(55, 70, 80, 0.68);
+    --accent-teal: #5EEAD4;
+    --accent-mint: #6EE7B7;
+    --accent-lavender: #A78BFA;
+    --accent-ice: #7DD3FC;
+    --text-primary: #F8FAFC;
+    --text-secondary: #A1AEBB;
+    --border-glass: rgba(255, 255, 255, 0.16);
+    --accent-warning: #FBBF24;
+    --accent-danger: #FB7185;
+  }
+
+  body {
+    background-color: #080B10;
+    color: #F8FAFC;
+    @apply antialiased font-sans relative min-h-screen overflow-x-hidden selection:bg-[#5EEAD4]/25 selection:text-[#6EE7B7];
+    font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+  }
+
+  /* Apple-inspired Minimalist Mist Scrollbar */
+  ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.16);
+    border-radius: 9999px;
+    transition: all 0.25s ease;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: #5EEAD4;
+    box-shadow: 0 0 12px rgba(94, 234, 212, 0.6);
+  }
+}
+
+/* =========================================================================
+   FLUID INTERACTIONS & LIQUID KEYFRAMES
+   ========================================================================= */
+
+@keyframes mist-drift-1 {
+  0%, 100% {
+    transform: translate(-20%, -20%) scale(1);
+    opacity: 0.75;
+  }
+  50% {
+    transform: translate(-10%, -8%) scale(1.18);
+    opacity: 0.95;
+  }
+}
+
+@keyframes mist-drift-2 {
+  0%, 100% {
+    transform: translate(15%, 5%) scale(1);
+    opacity: 0.7;
+  }
+  50% {
+    transform: translate(5%, 18%) scale(1.22);
+    opacity: 0.9;
+  }
+}
+
+@keyframes mist-drift-3 {
+  0%, 100% {
+    transform: translate(-5%, 20%) scale(1);
+    opacity: 0.7;
+  }
+  50% {
+    transform: translate(-15%, 10%) scale(1.15);
+    opacity: 0.88;
+  }
+}
+
+@keyframes liquid-enter {
+  from {
+    opacity: 0;
+    transform: translateY(10px) scale(0.995);
+    filter: blur(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+    filter: blur(0);
+  }
+}
+
+@keyframes liquid-glow-pulse {
+  0%, 100% {
+    box-shadow: 0 0 16px rgba(94, 234, 212, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.2);
+    border-color: rgba(94, 234, 212, 0.35);
+  }
+  50% {
+    box-shadow: 0 0 32px rgba(94, 234, 212, 0.42), inset 0 1px 0 rgba(110, 231, 183, 0.45);
+    border-color: rgba(110, 231, 183, 0.6);
+  }
+}
+
+@keyframes stroke-flow {
+  from {
+    stroke-dashoffset: 400;
+  }
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+/* =========================================================================
+   LIQUID GLASS & FLOATING SURFACES DESIGN SYSTEM
+   ========================================================================= */
+
+@layer components {
+  /* Living Ambient Mist Orbs */
+  .animate-mist-1 {
+    animation: mist-drift-1 20s ease-in-out infinite;
+  }
+  .animate-mist-2 {
+    animation: mist-drift-2 24s ease-in-out infinite;
+  }
+  .animate-mist-3 {
+    animation: mist-drift-3 22s ease-in-out infinite;
+  }
+
+  /* Fluid Page & Component Transition */
+  .animate-liquid-enter {
+    animation: liquid-enter 0.36s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  }
+
+  /* Primary Liquid Glass Surface */
+  .liquid-glass, .glass-card {
+    background: linear-gradient(135deg, rgba(55, 70, 80, 0.58) 0%, rgba(35, 46, 54, 0.48) 100%);
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+    border: 1px solid rgba(255, 255, 255, 0.16);
+    box-shadow: 0 20px 48px -12px rgba(0, 0, 0, 0.65), inset 0 1px 0 0 rgba(255, 255, 255, 0.2), inset 0 -1px 0 0 rgba(0, 0, 0, 0.25);
+    border-radius: 22px;
+    color: #F8FAFC;
+    position: relative;
+    transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  /* Interactive Liquid Glass with Fluid Hover Lift */
+  .liquid-glass-interactive, .glass-card-interactive {
+    background: linear-gradient(135deg, rgba(55, 70, 80, 0.58) 0%, rgba(35, 46, 54, 0.48) 100%);
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+    border: 1px solid rgba(255, 255, 255, 0.16);
+    box-shadow: 0 20px 48px -12px rgba(0, 0, 0, 0.65), inset 0 1px 0 0 rgba(255, 255, 255, 0.2);
+    border-radius: 22px;
+    color: #F8FAFC;
+    position: relative;
+    transition: all 0.28s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .liquid-glass-interactive:hover, .glass-card-interactive:hover {
+    transform: translateY(-3.5px) scale(1.006);
+    border-color: rgba(94, 234, 212, 0.45);
+    box-shadow: 0 26px 54px -10px rgba(0, 0, 0, 0.8), 0 0 28px rgba(94, 234, 212, 0.22), inset 0 1px 0 0 rgba(110, 231, 183, 0.35);
+  }
+
+  /* Elevated Liquid Glass (Higher Depth / Featured) */
+  .liquid-glass-elevated, .glass-card-glow {
+    background: linear-gradient(135deg, rgba(65, 82, 94, 0.68) 0%, rgba(41, 52, 61, 0.58) 100%);
+    backdrop-filter: blur(28px);
+    -webkit-backdrop-filter: blur(28px);
+    border: 1px solid rgba(94, 234, 212, 0.4);
+    box-shadow: 0 0 35px -5px rgba(94, 234, 212, 0.22), 0 24px 50px -10px rgba(0, 0, 0, 0.75), inset 0 1px 0 0 rgba(110, 231, 183, 0.35);
+    border-radius: 24px;
+    color: #F8FAFC;
+  }
+
+  /* Specular Light Reflection Sweep */
+  .liquid-sheen, .glass-sheen {
+    position: relative;
+    overflow: hidden;
+  }
+  .liquid-sheen::after, .glass-sheen::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: -150%;
+    width: 65%;
+    height: 100%;
+    background: linear-gradient(
+      90deg,
+      transparent 0%,
+      rgba(255, 255, 255, 0.12) 50%,
+      transparent 100%
+    );
+    transform: skewX(-20deg);
+    pointer-events: none;
+    transition: all 0.75s ease;
+  }
+  .liquid-sheen:hover::after, .glass-sheen:hover::after {
+    left: 200%;
+  }
+
+  /* Floating Sidebar Island (Apple macOS/iPadOS Style Dock) */
+  .floating-sidebar, .glass-sidebar {
+    background: rgba(17, 23, 34, 0.82);
+    backdrop-filter: blur(30px);
+    -webkit-backdrop-filter: blur(30px);
+    border: 1px solid rgba(255, 255, 255, 0.16);
+    box-shadow: 0 25px 60px -10px rgba(0, 0, 0, 0.75), inset 0 1px 0 0 rgba(255, 255, 255, 0.18);
+  }
+
+  /* Floating Header Toolbar Island */
+  .floating-header, .glass-header {
+    background: rgba(17, 23, 34, 0.80);
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+    border: 1px solid rgba(255, 255, 255, 0.16);
+    box-shadow: 0 16px 40px -10px rgba(0, 0, 0, 0.6), inset 0 1px 0 0 rgba(255, 255, 255, 0.15);
+  }
+
+  /* Liquid Frosted Pill Button / Filter */
+  .liquid-pill, .glass-pill {
+    background: rgba(41, 52, 61, 0.6);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid rgba(255, 255, 255, 0.16);
+    color: #A1AEBB;
+    transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .liquid-pill:hover, .glass-pill:hover {
+    background: rgba(55, 70, 80, 0.75);
+    color: #F8FAFC;
+    border-color: rgba(255, 255, 255, 0.28);
+    transform: translateY(-1px);
+  }
+
+  /* Active Brand Mint/Teal Pill */
+  .liquid-pill-active, .glass-pill-active {
+    background: rgba(110, 231, 183, 0.16);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid rgba(110, 231, 183, 0.45);
+    color: #6EE7B7;
+    box-shadow: 0 0 16px rgba(94, 234, 212, 0.28);
+    transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  /* Lavender Pill (Visualizations) */
+  .liquid-pill-lavender, .glass-pill-lavender {
+    background: rgba(167, 139, 250, 0.16);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid rgba(167, 139, 250, 0.45);
+    color: #A78BFA;
+    box-shadow: 0 0 14px rgba(167, 139, 250, 0.25);
+  }
+
+  /* Ice Blue Pill */
+  .liquid-pill-ice, .glass-pill-blue {
+    background: rgba(125, 211, 252, 0.16);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid rgba(125, 211, 252, 0.45);
+    color: #7DD3FC;
+    box-shadow: 0 0 14px rgba(125, 211, 252, 0.25);
+  }
+
+  /* Liquid Glass Modal (visionOS-Style Depth & Crystal Legibility) */
+  .liquid-modal, .glass-modal {
+    background: rgba(17, 23, 34, 0.94);
+    backdrop-filter: blur(32px);
+    -webkit-backdrop-filter: blur(32px);
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    box-shadow: 0 32px 75px -15px rgba(0, 0, 0, 0.9), 0 0 45px rgba(94, 234, 212, 0.1);
+    border-radius: 26px;
+    animation: liquid-enter 0.28s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  }
+
+  /* Apple-inspired Liquid Primary CTA Button */
+  .liquid-btn-primary, .glass-btn-primary {
+    background: linear-gradient(135deg, #5EEAD4 0%, #6EE7B7 100%);
+    color: #080B10;
+    font-weight: 700;
+    border: 1px solid rgba(255, 255, 255, 0.45);
+    box-shadow: 0 4px 22px rgba(94, 234, 212, 0.42), inset 0 1px 0 rgba(255, 255, 255, 0.6);
+    backdrop-filter: blur(12px);
+    transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    position: relative;
+    overflow: hidden;
+  }
+  .liquid-btn-primary::after, .glass-btn-primary::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: -150%;
+    width: 60%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.35), transparent);
+    transform: skewX(-20deg);
+    transition: all 0.6s ease;
+  }
+  .liquid-btn-primary:hover::after, .glass-btn-primary:hover::after {
+    left: 200%;
+  }
+  .liquid-btn-primary:hover, .glass-btn-primary:hover {
+    background: linear-gradient(135deg, #6EE7B7 0%, #5EEAD4 100%);
+    box-shadow: 0 6px 28px rgba(110, 231, 183, 0.58), 0 0 18px rgba(94, 234, 212, 0.45);
+    transform: translateY(-1.5px) scale(1.01);
+  }
+  .liquid-btn-primary:active, .glass-btn-primary:active {
+    transform: translateY(0.5px) scale(0.98);
+  }
+
+  /* Tactile Secondary Button */
+  .liquid-btn-secondary, .glass-btn-secondary {
+    background: rgba(41, 52, 61, 0.58);
+    color: #F8FAFC;
+    border: 1px solid rgba(255, 255, 255, 0.16);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.12);
+    backdrop-filter: blur(16px);
+    transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .liquid-btn-secondary:hover, .glass-btn-secondary:hover {
+    background: rgba(55, 70, 80, 0.78);
+    border-color: rgba(255, 255, 255, 0.3);
+    color: #FFFFFF;
+    transform: translateY(-1px);
+    box-shadow: 0 10px 24px -6px rgba(0, 0, 0, 0.65), inset 0 1px 0 rgba(255, 255, 255, 0.18);
+  }
+  .liquid-btn-secondary:active, .glass-btn-secondary:active {
+    transform: translateY(0.5px) scale(0.98);
+  }
+
+  /* Liquid Glass Form Input */
+  .liquid-input, .glass-input {
+    background-color: rgba(17, 23, 34, 0.85);
+    border: 1px solid rgba(255, 255, 255, 0.16);
+    color: #F8FAFC;
+    backdrop-filter: blur(14px);
+    transition: all 0.22s ease;
+    border-radius: 14px;
+  }
+  .liquid-input:focus, .glass-input:focus {
+    border-color: #5EEAD4;
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(94, 234, 212, 0.25), 0 0 20px rgba(94, 234, 212, 0.22);
+  }
+}
+
+/* Global Midnight Mist Theme Normalization */
+@layer utilities {
+  .bg-white {
+    background-color: rgba(41, 52, 61, 0.58) !important;
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+    border-color: rgba(255, 255, 255, 0.16) !important;
+    color: #F8FAFC;
+  }
+  .dark .dark\:bg-slate-900, .bg-slate-900 {
+    background-color: rgba(17, 23, 34, 0.85) !important;
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+    border-color: rgba(255, 255, 255, 0.14) !important;
+  }
+  .dark .dark\:bg-slate-800, .bg-slate-800 {
+    background-color: rgba(41, 52, 61, 0.58) !important;
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-color: rgba(255, 255, 255, 0.14) !important;
+  }
+  .bg-slate-50, .dark .dark\:bg-slate-950 {
+    background-color: #080B10 !important;
+  }
+  .border-slate-200, .border-slate-700, .border-slate-800 {
+    border-color: rgba(255, 255, 255, 0.14) !important;
+  }
+  .text-slate-900, .text-slate-800, .dark .dark\:text-white {
+    color: #F8FAFC !important;
+  }
+  .text-slate-500, .text-slate-400 {
+    color: #A1AEBB !important;
+  }
+}
+
+/* Print styles for POS receipt */
+@media print {
+  body * {
+    visibility: hidden;
+  }
+  #printable-receipt, #printable-receipt * {
+    visibility: visible;
+  }
+  #printable-receipt {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 80mm;
+    margin: 0;
+    padding: 8px;
+    font-size: 12px;
+    background: #fff;
+    color: #000;
+  }
+}

@@ -1,0 +1,26 @@
+name,sku,barcode,category,section,unit,selling_price,purchase_cost,initial_stock,reorder_threshold,min_order_qty,tax_rate_percent
+Tata Tea Premium Leaf Tea 250g,TEA-TATA-250,8901052001018,Dairy & Beverages,Beverages,box,135.00,115.00,30,10,24,5.0
+Red Label Natural Care Tea 500g,TEA-RED-500,8901030383823,Dairy & Beverages,Beverages,box,285.00,245.00,25,8,12,5.0
+Fortune Sunlite Refined Sunflower Oil 1L,OIL-FORT-1L,8906007281014,Spices & Oils,Groceries,packet,142.00,122.00,40,15,30,5.0
+Saffola Gold Pro Healthy Lifestyle Oil 1L,OIL-SAFF-1L,8901088002015,Spices & Oils,Groceries,packet,185.00,160.00,20,8,16,5.0
+Aashirvaad Superior MP Atta 10kg,ATTA-ASH-10KG,8901030010041,Grains & Staples,Staples,packet,480.00,410.00,15,6,10,5.0
+Fortune Sona Masoori Raw Rice 5kg,RICE-FORT-5KG,8906007283025,Grains & Staples,Staples,bag,375.00,320.00,20,8,10,0.0
+Tata Sampann Unpolished Toor Dal 1kg,DAL-TATA-1KG,8901052014025,Grains & Staples,Staples,packet,185.00,155.00,25,10,20,0.0
+Tata Sampann Moong Dal Split 500g,DAL-MOONG-500,8901052014032,Grains & Staples,Staples,packet,82.00,68.00,30,10,24,0.0
+Tata Salt Lite Low Sodium 1kg,SALT-LITE-1KG,8901052003012,Grains & Staples,Staples,packet,45.00,38.00,50,15,30,0.0
+Catch Turmeric Powder (Haldi) 200g,SPICE-CAT-HALDI,8901192001012,Spices & Oils,Groceries,box,60.00,48.00,35,10,24,5.0
+Everest Kashmiri Lal Chilli Powder 100g,SPICE-EVE-CHILLI,8901786001021,Spices & Oils,Groceries,box,88.00,72.00,25,8,20,5.0
+MDH Pav Bhaji Masala 100g,SPICE-MDH-PB,8902167001015,Spices & Oils,Groceries,box,80.00,65.00,20,6,12,5.0
+Britannia Good Day Butter Cookies 200g,BIS-GD-200,8901063012014,Snacks & Instant Foods,FMCG,packet,40.00,32.00,45,15,36,18.0
+Britannia Marie Gold Biscuits 250g,BIS-MARIE-250,8901063011024,Snacks & Instant Foods,FMCG,packet,35.00,28.00,50,20,40,18.0
+Haldirams Nagpur Aloo Bhujia 200g,SNK-HALD-BHUJ,8904004401018,Snacks & Instant Foods,FMCG,packet,55.00,45.00,30,10,24,12.0
+Knorr Classic Mixed Vegetable Soup 43g,INST-KNORR-VEG,8901030388019,Snacks & Instant Foods,FMCG,packet,50.00,42.00,25,8,20,12.0
+Colgate Strong Teeth Toothpaste 200g,CARE-COLG-200,8901314010012,Personal & Home Care,Household,box,120.00,98.00,30,10,24,18.0
+Dettol Handwash Refill Pouch 675ml,CARE-DET-HW,8901396120015,Personal & Home Care,Household,packet,119.00,95.00,20,8,16,18.0
+Rin Detergent Bar 250g (Pack of 4),CARE-RIN-BAR,8901030361012,Personal & Home Care,Household,pack,90.00,74.00,35,12,24,18.0
+Vim Dishwash Gel Lemon 500ml Bottle,CARE-VIM-500,8901030364020,Personal & Home Care,Household,bottle,135.00,110.00,24,8,16,18.0
+Harpic Power Plus Toilet Cleaner 500ml,CARE-HARP-500,8901396340017,Personal & Home Care,Household,bottle,105.00,88.00,28,10,20,18.0
+Nandini Pure Ghee Pouch 500ml,DAIRY-GHEE-500,8906036670018,Dairy & Beverages,Groceries,pouch,330.00,295.00,18,6,12,12.0
+Amul Butter Pasteurized 100g,DAIRY-AMUL-100,8901262010014,Dairy & Beverages,Dairy,box,58.00,52.00,30,12,25,12.0
+Kissan Fresh Tomato Ketchup 950g Pouch,FMCG-KISSAN-950,8901030386015,Snacks & Instant Foods,FMCG,pouch,140.00,115.00,20,6,12,12.0
+MTR Rava Idli Ready Mix 500g,INST-MTR-IDLI,8901042960013,Grains & Staples,Groceries,packet,115.00,92.00,22,8,18,5.0
