@@ -1,18 +1,23 @@
-from sqlalchemy import create_engine, event
+from sqlalchemy import create_engine, event, inspect
+from sqlalchemy.exc import IntegrityError, ProgrammingError
 from sqlalchemy.orm import declarative_base, sessionmaker
 from app.config import settings
 
-connect_args = {}
-if settings.DATABASE_URL.startswith("sqlite"):
-    connect_args = {"check_same_thread": False}
+database_url = settings.DATABASE_URL
+if database_url.startswith("postgres://"):
+    database_url = "postgresql+psycopg://" + database_url[len("postgres://"):]
+elif database_url.startswith("postgresql://"):
+    database_url = "postgresql+psycopg://" + database_url[len("postgresql://"):]
 
-engine = create_engine(
-    settings.DATABASE_URL,
-    connect_args=connect_args,
-    pool_pre_ping=True
-)
+is_sqlite = database_url.startswith("sqlite")
 
-if settings.DATABASE_URL.startswith("sqlite"):
+if is_sqlite:
+    engine = create_engine(
+        database_url,
+        connect_args={"check_same_thread": False},
+        pool_pre_ping=True,
+    )
+
     @event.listens_for(engine, "connect")
     def set_sqlite_pragma(dbapi_connection, connection_record):
         cursor = dbapi_connection.cursor()
@@ -20,10 +25,34 @@ if settings.DATABASE_URL.startswith("sqlite"):
         cursor.execute("PRAGMA journal_mode=WAL")
         cursor.execute("PRAGMA synchronous=NORMAL")
         cursor.close()
+else:
+    engine = create_engine(
+        database_url,
+        pool_pre_ping=True,
+        pool_recycle=300,
+        pool_size=5,
+        max_overflow=5,
+    )
 
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
 Base = declarative_base()
+
+
+def ensure_tables_initialized():
+    """Create missing tables safely, including concurrent cold starts on Postgres."""
+    if is_sqlite:
+        Base.metadata.create_all(bind=engine)
+        ensure_schema_compatibility()
+        return
+
+    try:
+        Base.metadata.create_all(bind=engine, checkfirst=True)
+    except (IntegrityError, ProgrammingError) as exc:
+        # Handle concurrent cold-start DDL races (e.g., duplicate enum/table creation)
+        inspector = inspect(engine)
+        if not inspector.has_table("businesses"):
+            raise exc
 
 def ensure_schema_compatibility():
     """Add columns introduced after the initial SQLite schema was created."""

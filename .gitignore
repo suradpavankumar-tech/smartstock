@@ -61,3 +61,10 @@ data/
 *.log
 .coverage
 htmlcov/
+
+# Vercel
+.vercel/
+.vercel
+
+.vercel
+.env*

@@ -67,7 +67,7 @@ def calculate_reorder_recommendations(
     # Fallback default supplier if none is assigned to product
     default_supplier = db.query(Supplier).filter(
         Supplier.business_id == business_id,
-        Supplier.is_active == True
+        func.upper(func.coalesce(Supplier.is_active, "YES")) != "NO"
     ).first()
 
     recommendations = []

@@ -7,7 +7,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 
 from app.config import settings
-from app.database import engine, Base, SessionLocal, ensure_schema_compatibility
+from app.database import Base, SessionLocal, engine, ensure_tables_initialized
 import app.models  # ensures all models are imported before create_all
 
 # Routers
@@ -39,8 +39,7 @@ from app.models.business import Business
 from app.smartstock_ai.monitoring.proactive_engine import run_proactive_scan
 
 # Initialize database tables
-Base.metadata.create_all(bind=engine)
-ensure_schema_compatibility()
+ensure_tables_initialized()
 
 
 async def _proactive_monitor_loop():
@@ -63,7 +62,11 @@ async def _proactive_monitor_loop():
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     bg_task = None
-    if settings.AI_ENABLE_BACKGROUND_MONITOR and "PYTEST_CURRENT_TEST" not in os.environ:
+    if (
+        settings.AI_ENABLE_BACKGROUND_MONITOR
+        and not settings.IS_SERVERLESS
+        and "PYTEST_CURRENT_TEST" not in os.environ
+    ):
         bg_task = asyncio.create_task(_proactive_monitor_loop())
     try:
         yield
@@ -101,6 +104,7 @@ async def add_process_time_header(request: Request, call_next):
 
 # Health check
 @app.get("/health", tags=["System"])
+@app.get(f"{settings.API_V1_STR}/health", tags=["System"])
 def health_check():
     return {
         "status": "HEALTHY",
