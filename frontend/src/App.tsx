@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import { AuthProvider, useAuth } from "./context/AuthContext";
 import { LanguageProvider, useLanguage } from "./context/LanguageContext";
 import { ThemeProvider } from "./context/ThemeContext";
-import { LiquidGlassProvider } from "./context/LiquidGlassContext";
 import { OfflineSyncProvider } from "./context/OfflineSyncContext";
 
 import { Sidebar, NavItemKey } from "./components/Sidebar";
@@ -152,15 +151,13 @@ const MainLayout: React.FC = () => {
 export default function App() {
   return (
     <ThemeProvider>
-      <LiquidGlassProvider>
-        <LanguageProvider>
-          <AuthProvider>
-            <OfflineSyncProvider>
-              <MainLayout />
-            </OfflineSyncProvider>
-          </AuthProvider>
-        </LanguageProvider>
-      </LiquidGlassProvider>
+      <LanguageProvider>
+        <AuthProvider>
+          <OfflineSyncProvider>
+            <MainLayout />
+          </OfflineSyncProvider>
+        </AuthProvider>
+      </LanguageProvider>
     </ThemeProvider>
   );
 }

@@ -1,17 +1,14 @@
 import React, { useState } from "react";
 import {
-  Store, ShieldCheck, TrendingUp, BarChart2, Cpu,
-  ArrowRight, Globe, Layers
+  Store, ShieldCheck, TrendingUp, BarChart2, Cpu, CheckCircle2,
+  Lock, ArrowRight, Globe
 } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
 import { useLanguage } from "../context/LanguageContext";
-import { useLiquidGlass } from "../context/LiquidGlassContext";
-import { LiquidGlassStage, LiquidGlassPanel } from "../components/common/LiquidGlassStage";
 
 export const LandingPage: React.FC = () => {
   const { login, register } = useAuth();
-  const { language, setLanguage } = useLanguage();
-  const { active: liquidGlassActive, webglSupported, toggleEnabled: toggleLiquidGlass } = useLiquidGlass();
+  const { language, setLanguage, t } = useLanguage();
   
   const [isRegisterMode, setIsRegisterMode] = useState(false);
   const [email, setEmail] = useState("");
@@ -82,22 +79,7 @@ export const LandingPage: React.FC = () => {
           </div>
         </div>
 
-        <div className="flex items-center gap-2.5">
-          <button
-            type="button"
-            onClick={toggleLiquidGlass}
-            disabled={!webglSupported}
-            className={`flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-xl border transition-all active:scale-[0.98] ${
-              liquidGlassActive
-                ? "bg-[#5EEAD4]/15 text-[#6EE7B7] border-[#5EEAD4]/40 shadow-[0_0_12px_rgba(94,234,212,0.2)]"
-                : "liquid-pill text-[#A1AEBB] hover:text-[#F8FAFC]"
-            } disabled:opacity-40`}
-            title="Toggle @ybouane/liquidglass WebGL shaders"
-          >
-            <Layers className="w-3.5 h-3.5 text-[#5EEAD4]" />
-            <span>{liquidGlassActive ? "WebGL Glass ON" : "WebGL Glass OFF"}</span>
-          </button>
-
+        <div className="flex items-center gap-3">
           <button
             onClick={() => setLanguage(language === "en" ? "kn" : "en")}
             className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-xl liquid-pill text-[#A1AEBB] hover:text-[#F8FAFC] transition-all active:scale-[0.98]"
@@ -127,81 +109,52 @@ export const LandingPage: React.FC = () => {
             and auditable financial accounting.
           </p>
 
-          <LiquidGlassStage
-            backdropVariant="hero"
-            className="grid grid-cols-1 sm:grid-cols-2 gap-4 p-4 sm:p-5 border border-white/10 overflow-hidden"
-          >
-            <LiquidGlassPanel
-              glassConfig={{ button: true, cornerRadius: 20, zRadius: 24 }}
-              fallbackClassName="liquid-glass-interactive liquid-sheen"
-              className="p-4 rounded-[20px] flex items-start gap-3"
-            >
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
+            <div className="p-4 rounded-2xl liquid-glass-interactive liquid-sheen flex items-start gap-3">
               <div className="w-8 h-8 rounded-xl bg-[#6EE7B7]/15 text-[#6EE7B7] border border-[#5EEAD4]/40 flex items-center justify-center shrink-0 mt-0.5 shadow-[0_0_10px_rgba(94,234,212,0.2)]">
                 <Store className="w-4 h-4" />
               </div>
               <div>
                 <h4 className="text-xs font-bold text-[#F8FAFC]">Strictly Private Dashboards</h4>
-                <p className="text-[11px] text-[#CBD5E1] mt-0.5">Every shopkeeper gets an isolated, private workspace. Zero cross-shop data leakage.</p>
+                <p className="text-[11px] text-[#A1AEBB] mt-0.5">Every shopkeeper gets an isolated, private workspace. Zero cross-shop data leakage.</p>
               </div>
-            </LiquidGlassPanel>
+            </div>
 
-            <LiquidGlassPanel
-              glassConfig={{ button: true, cornerRadius: 20, zRadius: 24 }}
-              fallbackClassName="liquid-glass-interactive liquid-sheen"
-              className="p-4 rounded-[20px] flex items-start gap-3"
-            >
+            <div className="p-4 rounded-2xl liquid-glass-interactive liquid-sheen flex items-start gap-3">
               <div className="w-8 h-8 rounded-xl bg-[#7DD3FC]/15 text-[#7DD3FC] border border-[#7DD3FC]/40 flex items-center justify-center shrink-0 mt-0.5 shadow-[0_0_10px_rgba(125,211,252,0.2)]">
                 <TrendingUp className="w-4 h-4" />
               </div>
               <div>
                 <h4 className="text-xs font-bold text-[#F8FAFC]">Real Data & Honest ML</h4>
-                <p className="text-[11px] text-[#CBD5E1] mt-0.5">Zero fabricated numbers. True demand forecasting only when 14+ days of sales records exist.</p>
+                <p className="text-[11px] text-[#A1AEBB] mt-0.5">Zero fabricated numbers. True demand forecasting only when 14+ days of sales records exist.</p>
               </div>
-            </LiquidGlassPanel>
+            </div>
 
-            <LiquidGlassPanel
-              glassConfig={{ button: true, cornerRadius: 20, zRadius: 24 }}
-              fallbackClassName="liquid-glass-interactive liquid-sheen"
-              className="p-4 rounded-[20px] flex items-start gap-3"
-            >
+            <div className="p-4 rounded-2xl liquid-glass-interactive liquid-sheen flex items-start gap-3">
               <div className="w-8 h-8 rounded-xl bg-[#FBBF24]/15 text-[#FBBF24] border border-[#FBBF24]/40 flex items-center justify-center shrink-0 mt-0.5 shadow-[0_0_10px_rgba(251,191,36,0.2)]">
                 <BarChart2 className="w-4 h-4" />
               </div>
               <div>
                 <h4 className="text-xs font-bold text-[#F8FAFC]">Traceable Ledger Accounting</h4>
-                <p className="text-[11px] text-[#CBD5E1] mt-0.5">Immutable stock movement logs. COGS and gross margins reconcile with real purchases.</p>
+                <p className="text-[11px] text-[#A1AEBB] mt-0.5">Immutable stock movement logs. COGS and gross margins reconcile with real purchases.</p>
               </div>
-            </LiquidGlassPanel>
+            </div>
 
-            <LiquidGlassPanel
-              glassConfig={{ button: true, cornerRadius: 20, zRadius: 24 }}
-              fallbackClassName="liquid-glass-interactive liquid-sheen"
-              className="p-4 rounded-[20px] flex items-start gap-3"
-            >
+            <div className="p-4 rounded-2xl liquid-glass-interactive liquid-sheen flex items-start gap-3">
               <div className="w-8 h-8 rounded-xl bg-[#A78BFA]/15 text-[#A78BFA] border border-[#A78BFA]/40 flex items-center justify-center shrink-0 mt-0.5 shadow-[0_0_10px_rgba(167,139,250,0.2)]">
                 <Cpu className="w-4 h-4" />
               </div>
               <div>
                 <h4 className="text-xs font-bold text-[#F8FAFC]">Offline Sync & PWA</h4>
-                <p className="text-[11px] text-[#CBD5E1] mt-0.5">Continue billing during network outages. Local queue synchronizes idempotently.</p>
+                <p className="text-[11px] text-[#A1AEBB] mt-0.5">Continue billing during network outages. Local queue synchronizes idempotently.</p>
               </div>
-            </LiquidGlassPanel>
-          </LiquidGlassStage>
+            </div>
+          </div>
         </div>
 
         {/* Right Column: Auth Card */}
         <div className="lg:col-span-5">
-          <LiquidGlassStage
-            backdropVariant="hero"
-            disableUserSelect={false}
-            stageKey={isRegisterMode ? "register" : "login"}
-            className="p-4 sm:p-5 border border-white/12 overflow-hidden"
-          >
-            <LiquidGlassPanel
-              glassConfig={{ cornerRadius: 24, zRadius: 30, blurAmount: 0.34 }}
-              fallbackClassName="liquid-glass-elevated"
-              className="p-6 sm:p-8 rounded-[24px] shadow-2xl"
-            >
+          <div className="liquid-glass-elevated p-6 sm:p-8 shadow-2xl relative">
             <div className="mb-6">
               <h2 className="text-xl font-bold text-[#F8FAFC]">
                 {isRegisterMode ? "Register Your Business" : "Shopkeeper Login"}
@@ -344,8 +297,7 @@ export const LandingPage: React.FC = () => {
                   : "New retailer? Register your shop on SmartStock"}
               </button>
             </div>
-            </LiquidGlassPanel>
-          </LiquidGlassStage>
+          </div>
         </div>
       </main>
 

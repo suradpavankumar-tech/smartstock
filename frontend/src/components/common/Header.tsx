@@ -7,7 +7,6 @@ import {
 } from "lucide-react";
 import { useLanguage } from "../../context/LanguageContext";
 import { useAuth } from "../../context/AuthContext";
-import { useLiquidGlass } from "../../context/LiquidGlassContext";
 import { SoundboxWidget } from "./SoundboxWidget";
 import { NavItemKey } from "./Sidebar";
 import { api } from "../../services/api";
@@ -31,7 +30,6 @@ interface HeaderProps {
 export const Header: React.FC<HeaderProps> = ({ onToggleMobileMenu, onNavigate }) => {
   const { language, setLanguage, t, kannadaNumerals, setKannadaNumerals } = useLanguage();
   const { currentBusiness, businesses, switchBusiness } = useAuth();
-  const { active: liquidGlassActive, webglSupported, toggleEnabled: toggleLiquidGlass } = useLiquidGlass();
   const [theme, setTheme] = useState<"light" | "dark">("dark");
   const [langDropdownOpen, setLangDropdownOpen] = useState(false);
   const langMenuRef = useRef<HTMLDivElement>(null);
@@ -693,32 +691,6 @@ export const Header: React.FC<HeaderProps> = ({ onToggleMobileMenu, onNavigate }
             </div>
           )}
         </div>
-
-        {/* WebGL Liquid Glass Shader Quick Toggle */}
-        <button
-          onClick={toggleLiquidGlass}
-          disabled={!webglSupported}
-          className={`hidden sm:inline-flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-semibold rounded-xl transition-all border active:scale-[0.98] ${
-            liquidGlassActive
-              ? "bg-[#5EEAD4]/15 text-[#6EE7B7] border-[#5EEAD4]/40 shadow-[0_0_12px_rgba(94,234,212,0.2)]"
-              : "liquid-pill text-[#A1AEBB] hover:text-[#F8FAFC]"
-          } disabled:opacity-40`}
-          title={
-            webglSupported
-              ? liquidGlassActive
-                ? "WebGL Liquid Glass Shaders ON (click to toggle)"
-                : "WebGL Liquid Glass Shaders OFF (click to enable)"
-              : "WebGL unavailable — using CSS glass fallback"
-          }
-        >
-          <Layers className="w-3.5 h-3.5 text-[#5EEAD4]" />
-          <span className="hidden md:inline">Glass</span>
-          <span
-            className={`w-1.5 h-1.5 rounded-full ${
-              liquidGlassActive ? "bg-[#6EE7B7] shadow-[0_0_6px_#5EEAD4]" : "bg-[#A1AEBB]/50"
-            }`}
-          />
-        </button>
 
         {/* Dark/Light mode toggle */}
         <button
