@@ -16,6 +16,7 @@ import {
   DEFAULT_RECEIPT_SETTINGS,
 } from "../utils/receiptSettings";
 import { qrCodeSvgDataUrl } from "../utils/qrCode";
+import { LiquidGlassStudio } from "../components/settings/LiquidGlassStudio";
 import {
   Settings, Building2, MapPin, Phone, Mail, CheckCircle2, Save,
   AlertCircle, QrCode, Smartphone, Copy, Check, Sparkles, Printer,
@@ -23,7 +24,7 @@ import {
   Receipt, ShieldCheck, Eye, RefreshCw
 } from "lucide-react";
 
-type SettingsTab = "profile" | "upi" | "receipt" | "soundbox" | "billing" | "backup";
+type SettingsTab = "profile" | "upi" | "receipt" | "soundbox" | "billing" | "liquid-glass" | "backup";
 
 export const SettingsPage: React.FC = () => {
   const { t } = useLanguage();
@@ -284,6 +285,7 @@ export const SettingsPage: React.FC = () => {
           { key: "receipt", label: "Receipt & Thermal Printer", icon: Printer },
           { key: "soundbox", label: "Voice Soundbox", icon: Volume2 },
           { key: "billing", label: "Billing & Scanner", icon: Sliders },
+          { key: "liquid-glass", label: "Liquid Glass WebGL", icon: Sparkles },
           { key: "backup", label: "Data Safety & Backup", icon: HardDrive },
         ].map((tab) => {
           const Icon = tab.icon;
@@ -1289,6 +1291,7 @@ export const SettingsPage: React.FC = () => {
           </div>
         </div>
       )}
+      {activeTab === "liquid-glass" && <LiquidGlassStudio />}
     </div>
   );
 };

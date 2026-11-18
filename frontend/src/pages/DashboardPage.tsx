@@ -31,6 +31,7 @@ import { NavItemKey } from "../components/Sidebar";
 import { CashTillWidget } from "../components/common/CashTillWidget";
 import { PrintableReceipt } from "../components/common/PrintableReceipt";
 import { KannadaText } from "../components/common/KannadaText";
+import { LiquidGlassStage, LiquidGlassPanel } from "../components/common/LiquidGlassStage";
 
 interface DashboardPageProps {
   onNavigate: (tab: NavItemKey) => void;
@@ -239,9 +240,16 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({ onNavigate }) => {
         <div className="absolute -top-24 -left-24 w-80 h-80 bg-gradient-to-br from-[#5EEAD4]/16 to-transparent rounded-full blur-3xl pointer-events-none" />
         <div className="absolute top-1/3 -right-24 w-80 h-80 bg-gradient-to-bl from-[#7DD3FC]/12 to-[#A78BFA]/10 rounded-full blur-3xl pointer-events-none" />
 
-        {/* 1. Executive Header & Timeline / Primary Action Toolbar */}
-        <div className="relative z-10 flex flex-col lg:flex-row lg:items-center justify-between gap-4 px-5 sm:px-7 py-4 border-b border-white/[0.08]">
-          <div className="flex items-center gap-3.5 min-w-0">
+        {/* 1. Executive Header & Timeline / Primary Action Toolbar (WebGL Liquid Glass Stage) */}
+        <LiquidGlassStage
+          backdropVariant="dashboard"
+          className="relative z-10 flex flex-col lg:flex-row lg:items-center justify-between gap-4 p-4 sm:p-5 border-b border-white/[0.08] rounded-t-[26px] rounded-b-none overflow-hidden"
+        >
+          <LiquidGlassPanel
+            glassConfig={{ cornerRadius: 20, zRadius: 24, blurAmount: 0.28 }}
+            fallbackClassName="liquid-glass"
+            className="flex items-center gap-3.5 min-w-0 px-4 py-3 rounded-[20px]"
+          >
             <div className="w-9 h-9 rounded-full bg-[#080B10] border border-[#5EEAD4]/40 text-[#6EE7B7] flex items-center justify-center shadow-[0_0_12px_rgba(94,234,212,0.25)] shrink-0">
               <svg viewBox="0 0 24 24" className="w-4 h-4 fill-current text-[#6EE7B7]">
                 <circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" strokeWidth="1.5" strokeOpacity="0.4" />
@@ -268,15 +276,19 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({ onNavigate }) => {
                   </button>
                 )}
               </div>
-              <p className="text-[11.5px] text-[#A1AEBB] mt-0.5 truncate">
+              <p className="text-[11.5px] text-[#CBD5E1] mt-0.5 truncate">
                 {isKn
                   ? "ರಿಯಲ್-ಟೈಮ್ ಮಾರಾಟ, ದಾಸ್ತಾನು ಮೌಲ್ಯ, ನಗದು ಡ್ರಾಯರ್ ಮತ್ತು ಖಾತಾ ಬಾಕಿ ಕಾರ್ಯನಿರ್ವಾಹಕ ಕೇಂದ್ರ"
                   : "Live P&L telemetry, working capital allocation, till shift & counter execution"}
               </p>
             </div>
-          </div>
+          </LiquidGlassPanel>
 
-          <div className="flex flex-wrap items-center justify-between lg:justify-end gap-4 shrink-0">
+          <LiquidGlassPanel
+            glassConfig={{ cornerRadius: 20, zRadius: 24, blurAmount: 0.24 }}
+            fallbackClassName="liquid-glass"
+            className="flex flex-wrap items-center justify-between lg:justify-end gap-4 shrink-0 px-4 py-3 rounded-[20px]"
+          >
             {/* Timeline Tabs */}
             <div className="flex items-center gap-5 text-xs font-semibold">
               {(
@@ -331,8 +343,8 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({ onNavigate }) => {
                 </span>
               </button>
             </div>
-          </div>
-        </div>
+          </LiquidGlassPanel>
+        </LiquidGlassStage>
 
         {/* Inline Error Banner */}
         {error && (
