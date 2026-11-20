@@ -6,6 +6,8 @@ import { OfflineSyncProvider } from "./context/OfflineSyncContext";
 
 import { Sidebar, NavItemKey } from "./components/Sidebar";
 import { Header } from "./components/Header";
+import { BottomNav } from "./components/common/BottomNav";
+import { MobileMoreMenu } from "./components/common/MobileMoreMenu";
 import { FloatingAiLauncher } from "./components/ai/FloatingAiLauncher";
 import { AIModeType } from "./types";
 
@@ -116,23 +118,39 @@ const MainLayout: React.FC = () => {
       <div className="fixed top-1/4 right-0 w-[450px] h-[450px] bg-gradient-to-br from-[#A78BFA]/15 via-[#7DD3FC]/10 to-transparent rounded-full blur-[120px] pointer-events-none translate-x-1/4 z-0 animate-mist-2" />
       <div className="fixed bottom-0 left-1/3 w-[500px] h-[500px] bg-gradient-to-br from-[#7DD3FC]/14 via-[#5EEAD4]/10 to-transparent rounded-full blur-[130px] pointer-events-none translate-y-1/4 z-0 animate-mist-3" />
 
-      {/* Floating Sidebar Navigation (Apple visionOS/macOS Floating Dock) */}
+      {/* Floating Sidebar Navigation (Apple visionOS/macOS Floating Dock for Desktop >=1024px) */}
       <Sidebar
         currentTab={currentTab}
         onSelectTab={setCurrentTab}
-        isOpenMobile={mobileMenuOpen}
+        isOpenMobile={false}
         onCloseMobile={() => setMobileMenuOpen(false)}
       />
 
-      {/* Main Content Area (Detached Floating Island Offset) */}
-      <div className="flex-1 lg:pl-[17.5rem] flex flex-col min-w-0 z-10 relative pr-0 sm:pr-4 pb-6">
+      {/* Main Content Area (Detached Floating Island Offset on Desktop, Android Fluid on Mobile) */}
+      <div className="flex-1 lg:pl-[17.5rem] flex flex-col min-w-0 z-10 relative pr-0 sm:pr-4 pb-[calc(4.5rem+env(safe-area-inset-bottom,0px))] lg:pb-6">
         <Header onToggleMobileMenu={() => setMobileMenuOpen(true)} onNavigate={setCurrentTab} />
-        <main className="flex-1 p-3 sm:p-5 lg:p-6 max-w-7xl mx-auto w-full">
+        <main className="flex-1 p-2.5 sm:p-5 lg:p-6 max-w-7xl mx-auto w-full">
           <div key={currentTab} className="animate-liquid-enter">
             {renderContent()}
           </div>
         </main>
       </div>
+
+      {/* Dedicated Android-style Fixed Bottom Navigation Bar (<1024px) */}
+      <BottomNav
+        currentTab={currentTab}
+        onSelectTab={setCurrentTab}
+        onOpenMoreMenu={() => setMobileMenuOpen(true)}
+        isMoreMenuOpen={mobileMenuOpen}
+      />
+
+      {/* Mobile Categorized More Menu Bottom Sheet (<1024px) */}
+      <MobileMoreMenu
+        isOpen={mobileMenuOpen}
+        onClose={() => setMobileMenuOpen(false)}
+        currentTab={currentTab}
+        onSelectTab={setCurrentTab}
+      />
 
       {/* Persistent SmartStock AI Ultra Floating Launcher on non-AI tabs */}
       <FloatingAiLauncher

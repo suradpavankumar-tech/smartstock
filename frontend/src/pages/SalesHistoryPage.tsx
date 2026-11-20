@@ -647,164 +647,257 @@ export const SalesHistoryPage: React.FC = () => {
               )}
             </div>
           ) : (
-            <div className="overflow-x-auto">
-              <table className="w-full text-left text-xs">
-                <thead className="bg-[#080B10]/35 border-b border-white/[0.08] text-[10.5px] text-[#A1AEBB] font-semibold uppercase tracking-[0.1em]">
-                  <tr>
-                    <th className="px-5 sm:px-7 py-3">Invoice #</th>
-                    <th className="px-4 py-3">Date & Time</th>
-                    <th className="px-4 py-3">Customer</th>
-                    <th className="px-4 py-3">Payment</th>
-                    <th className="px-4 py-3 text-right">Items</th>
-                    <th className="px-4 py-3 text-right">Total Amount</th>
-                    <th className="px-4 py-3 text-center">Status</th>
-                    <th className="px-5 sm:px-7 py-3 text-right">Actions</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-white/[0.06]">
-                  {filtered.map((inv) => {
-                    const pStyle = PAYMENT_COLORS[inv.payment_method] || PAYMENT_COLORS.SPLIT;
-                    const isCompleted = inv.status === "COMPLETED";
-                    return (
-                      <tr
-                        key={inv.id}
-                        className="border-l-2 border-l-transparent hover:border-l-[#5EEAD4]/75 hover:bg-white/[0.025] transition-all"
-                      >
-                        <td className="px-5 sm:px-7 py-3.5 whitespace-nowrap">
-                          <button
-                            type="button"
-                            onClick={() => setSelectedInvoice(inv)}
-                            className="font-mono font-bold text-[#F8FAFC] hover:text-[#6EE7B7] transition-colors tabular-nums text-left"
-                          >
-                            {inv.invoice_number}
-                          </button>
-                          {inv.created_by_name && (
-                            <div className="text-[10px] text-[#A1AEBB]/70 mt-0.5">
-                              By <KannadaText text={inv.created_by_name} />
-                            </div>
-                          )}
-                        </td>
-
-                        <td className="px-4 py-3.5 text-[11px] text-[#A1AEBB] font-mono tabular-nums whitespace-nowrap">
-                          {new Date(inv.created_at).toLocaleString("en-IN", {
-                            day: "2-digit",
-                            month: "short",
-                            year: "numeric",
-                            hour: "2-digit",
-                            minute: "2-digit",
-                          })}
-                        </td>
-
-                        <td className="px-4 py-3.5">
-                          {inv.customer_name ? (
-                            <div>
-                              <div className="font-semibold text-[#F8FAFC]">
-                                <KannadaText text={inv.customer_name} />
-                              </div>
-                              {inv.customer_phone && (
-                                <div className="text-[10.5px] font-mono text-[#A1AEBB] mt-0.5">
-                                  {inv.customer_phone}
-                                </div>
-                              )}
-                            </div>
-                          ) : (
-                            <span className="text-[#A1AEBB]/65 italic">
-                              {isKn ? "ಸಾಮಾನ್ಯ ಗ್ರಾಹಕರು" : "Walk-in Customer"}
-                            </span>
-                          )}
-                        </td>
-
-                        <td className="px-4 py-3.5 whitespace-nowrap">
-                          <span
-                            className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-lg text-[10.5px] font-bold border ${pStyle.badge}`}
-                          >
-                            {pStyle.label}
-                          </span>
-                          {inv.payment_method === "CREDIT" && inv.payment_status === "DUE" && (
-                            <span className="block text-[9.5px] text-[#FBBF24] font-semibold mt-0.5">
-                              Khata Due
-                            </span>
-                          )}
-                        </td>
-
-                        <td className="px-4 py-3.5 text-right font-mono text-[#A1AEBB] tabular-nums">
-                          {inv.items?.length || 0}
-                        </td>
-
-                        <td className="px-4 py-3.5 text-right font-mono font-bold text-[13px] text-[#F8FAFC] tabular-nums whitespace-nowrap">
-                          {formatMoney(inv.total_amount)}
-                        </td>
-
-                        <td className="px-4 py-3.5 text-center whitespace-nowrap">
-                          {isCompleted ? (
-                            <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-lg text-[10.5px] font-bold bg-[#6EE7B7]/12 text-[#6EE7B7] border border-[#6EE7B7]/35">
-                              <CheckCircle2 className="w-3 h-3" />
-                              {isKn ? "ಪೂರ್ಣ" : "Completed"}
-                            </span>
-                          ) : (
-                            <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-lg text-[10.5px] font-bold bg-[#FB7185]/12 text-[#FB7185] border border-[#FB7185]/35">
-                              <XCircle className="w-3 h-3" />
-                              {inv.status === "REFUNDED"
-                                ? "Refunded"
-                                : isKn
-                                ? "ರದ್ದು"
-                                : "Cancelled"}
-                            </span>
-                          )}
-                        </td>
-
-                        <td className="px-5 sm:px-7 py-3.5 text-right whitespace-nowrap">
-                          <div className="inline-flex items-center justify-end gap-1">
+            <>
+              {/* Desktop Invoices Table (>=md) */}
+              <div className="hidden md:block overflow-x-auto">
+                <table className="w-full text-left text-xs">
+                  <thead className="bg-[#080B10]/35 border-b border-white/[0.08] text-[10.5px] text-[#A1AEBB] font-semibold uppercase tracking-[0.1em]">
+                    <tr>
+                      <th className="px-5 sm:px-7 py-3">Invoice #</th>
+                      <th className="px-4 py-3">Date & Time</th>
+                      <th className="px-4 py-3">Customer</th>
+                      <th className="px-4 py-3">Payment</th>
+                      <th className="px-4 py-3 text-right">Items</th>
+                      <th className="px-4 py-3 text-right">Total Amount</th>
+                      <th className="px-4 py-3 text-center">Status</th>
+                      <th className="px-5 sm:px-7 py-3 text-right">Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-white/[0.06]">
+                    {filtered.map((inv) => {
+                      const pStyle = PAYMENT_COLORS[inv.payment_method] || PAYMENT_COLORS.SPLIT;
+                      const isCompleted = inv.status === "COMPLETED";
+                      return (
+                        <tr
+                          key={inv.id}
+                          className="border-l-2 border-l-transparent hover:border-l-[#5EEAD4]/75 hover:bg-white/[0.025] transition-all"
+                        >
+                          <td className="px-5 sm:px-7 py-3.5 whitespace-nowrap">
                             <button
                               type="button"
                               onClick={() => setSelectedInvoice(inv)}
-                              className="p-1.5 rounded-lg text-[#A1AEBB] hover:text-[#F8FAFC] hover:bg-white/[0.08] transition-colors"
-                              title="View Invoice Breakdown"
-                              aria-label={`View ${inv.invoice_number}`}
+                              className="font-mono font-bold text-[#F8FAFC] hover:text-[#6EE7B7] transition-colors tabular-nums text-left"
                             >
-                              <Eye className="w-4 h-4" />
+                              {inv.invoice_number}
                             </button>
-                            <button
-                              type="button"
-                              onClick={() => setPrintInvoice(inv)}
-                              className="p-1.5 rounded-lg text-[#7DD3FC]/85 hover:text-[#7DD3FC] hover:bg-[#7DD3FC]/10 transition-colors"
-                              title="Print Thermal Receipt"
-                              aria-label={`Print ${inv.invoice_number}`}
+                            {inv.created_by_name && (
+                              <div className="text-[10px] text-[#A1AEBB]/70 mt-0.5">
+                                By <KannadaText text={inv.created_by_name} />
+                              </div>
+                            )}
+                          </td>
+
+                          <td className="px-4 py-3.5 text-[11px] text-[#A1AEBB] font-mono tabular-nums whitespace-nowrap">
+                            {new Date(inv.created_at).toLocaleString("en-IN", {
+                              day: "2-digit",
+                              month: "short",
+                              year: "numeric",
+                              hour: "2-digit",
+                              minute: "2-digit",
+                            })}
+                          </td>
+
+                          <td className="px-4 py-3.5">
+                            {inv.customer_name ? (
+                              <div>
+                                <div className="font-semibold text-[#F8FAFC]">
+                                  <KannadaText text={inv.customer_name} />
+                                </div>
+                                {inv.customer_phone && (
+                                  <div className="text-[10.5px] font-mono text-[#A1AEBB] mt-0.5">
+                                    {inv.customer_phone}
+                                  </div>
+                                )}
+                              </div>
+                            ) : (
+                              <span className="text-[#A1AEBB]/65 italic">
+                                {isKn ? "ಸಾಮಾನ್ಯ ಗ್ರಾಹಕರು" : "Walk-in Customer"}
+                              </span>
+                            )}
+                          </td>
+
+                          <td className="px-4 py-3.5 whitespace-nowrap">
+                            <span
+                              className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-lg text-[10.5px] font-bold border ${pStyle.badge}`}
                             >
-                              <Printer className="w-4 h-4" />
-                            </button>
-                            <button
-                              type="button"
-                              onClick={() => handleShareWhatsApp(inv)}
-                              className="p-1.5 rounded-lg text-[#6EE7B7]/85 hover:text-[#6EE7B7] hover:bg-[#5EEAD4]/10 transition-colors"
-                              title="Send WhatsApp Receipt"
-                              aria-label={`WhatsApp receipt for ${inv.invoice_number}`}
-                            >
-                              <MessageCircle className="w-4 h-4" />
-                            </button>
-                            {isCompleted && (
+                              {pStyle.label}
+                            </span>
+                            {inv.payment_method === "CREDIT" && inv.payment_status === "DUE" && (
+                              <span className="block text-[9.5px] text-[#FBBF24] font-semibold mt-0.5">
+                                Khata Due
+                              </span>
+                            )}
+                          </td>
+
+                          <td className="px-4 py-3.5 text-right font-mono text-[#A1AEBB] tabular-nums">
+                            {inv.items?.length || 0}
+                          </td>
+
+                          <td className="px-4 py-3.5 text-right font-mono font-bold text-[13px] text-[#F8FAFC] tabular-nums whitespace-nowrap">
+                            {formatMoney(inv.total_amount)}
+                          </td>
+
+                          <td className="px-4 py-3.5 text-center whitespace-nowrap">
+                            {isCompleted ? (
+                              <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-lg text-[10.5px] font-bold bg-[#6EE7B7]/12 text-[#6EE7B7] border border-[#6EE7B7]/35">
+                                <CheckCircle2 className="w-3 h-3" />
+                                {isKn ? "ಪೂರ್ಣ" : "Completed"}
+                              </span>
+                            ) : (
+                              <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-lg text-[10.5px] font-bold bg-[#FB7185]/12 text-[#FB7185] border border-[#FB7185]/35">
+                                <XCircle className="w-3 h-3" />
+                                {inv.status === "REFUNDED"
+                                  ? "Refunded"
+                                  : isKn
+                                  ? "ರದ್ದು"
+                                  : "Cancelled"}
+                              </span>
+                            )}
+                          </td>
+
+                          <td className="px-5 sm:px-7 py-3.5 text-right whitespace-nowrap">
+                            <div className="inline-flex items-center justify-end gap-1">
                               <button
                                 type="button"
-                                onClick={() => {
-                                  setCancelReason("");
-                                  setCancelError(null);
-                                  setCancelModalInvoice(inv);
-                                }}
-                                className="p-1.5 rounded-lg text-[#A1AEBB]/65 hover:text-[#FB7185] hover:bg-[#FB7185]/10 transition-colors"
-                                title="Cancel Invoice & Restock"
-                                aria-label={`Cancel ${inv.invoice_number}`}
+                                onClick={() => setSelectedInvoice(inv)}
+                                className="p-1.5 rounded-lg text-[#A1AEBB] hover:text-[#F8FAFC] hover:bg-white/[0.08] transition-colors"
+                                title="View Invoice Breakdown"
+                                aria-label={`View ${inv.invoice_number}`}
                               >
-                                <Ban className="w-4 h-4" />
+                                <Eye className="w-4 h-4" />
                               </button>
+                              <button
+                                type="button"
+                                onClick={() => setPrintInvoice(inv)}
+                                className="p-1.5 rounded-lg text-[#7DD3FC]/85 hover:text-[#7DD3FC] hover:bg-[#7DD3FC]/10 transition-colors"
+                                title="Print Thermal Receipt"
+                                aria-label={`Print ${inv.invoice_number}`}
+                              >
+                                <Printer className="w-4 h-4" />
+                              </button>
+                              <button
+                                type="button"
+                                onClick={() => handleShareWhatsApp(inv)}
+                                className="p-1.5 rounded-lg text-[#6EE7B7]/85 hover:text-[#6EE7B7] hover:bg-[#5EEAD4]/10 transition-colors"
+                                title="Send WhatsApp Receipt"
+                                aria-label={`WhatsApp receipt for ${inv.invoice_number}`}
+                              >
+                                <MessageCircle className="w-4 h-4" />
+                              </button>
+                              {isCompleted && (
+                                <button
+                                  type="button"
+                                  onClick={() => {
+                                    setCancelReason("");
+                                    setCancelError(null);
+                                    setCancelModalInvoice(inv);
+                                  }}
+                                  className="p-1.5 rounded-lg text-[#A1AEBB]/65 hover:text-[#FB7185] hover:bg-[#FB7185]/10 transition-colors"
+                                  title="Cancel Invoice & Restock"
+                                  aria-label={`Cancel ${inv.invoice_number}`}
+                                >
+                                  <Ban className="w-4 h-4" />
+                                </button>
+                              )}
+                            </div>
+                          </td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              </div>
+
+              {/* Mobile Invoices Cards (<md) */}
+              <div className="block md:hidden divide-y divide-white/[0.08]">
+                {filtered.map((inv) => {
+                  const pStyle = PAYMENT_COLORS[inv.payment_method] || PAYMENT_COLORS.SPLIT;
+                  const isCompleted = inv.status === "COMPLETED";
+
+                  return (
+                    <div key={inv.id} className="p-3.5 space-y-2.5 hover:bg-white/[0.02]">
+                      <div className="flex items-start justify-between gap-2">
+                        <div className="min-w-0 flex-1">
+                          <button
+                            type="button"
+                            onClick={() => setSelectedInvoice(inv)}
+                            className="font-mono font-bold text-sm text-[#F8FAFC] hover:text-[#6EE7B7] text-left"
+                          >
+                            {inv.invoice_number}
+                          </button>
+                          <div className="text-[11px] text-[#A1AEBB] mt-0.5">
+                            {inv.customer_name ? (
+                              <span className="text-[#F8FAFC]/90 font-medium">
+                                <KannadaText text={inv.customer_name} />
+                              </span>
+                            ) : (
+                              <span className="italic">{isKn ? "ಸಾಮಾನ್ಯ ಗ್ರಾಹಕರು" : "Walk-in"}</span>
                             )}
+                            {inv.customer_phone && <span className="ml-1 font-mono text-[10px]">({inv.customer_phone})</span>}
                           </div>
-                        </td>
-                      </tr>
-                    );
-                  })}
-                </tbody>
-              </table>
-            </div>
+                        </div>
+
+                        <div className="text-right shrink-0">
+                          <div className="font-mono font-extrabold text-sm text-[#6EE7B7]">
+                            {formatMoney(inv.total_amount)}
+                          </div>
+                          <div className="text-[10px] text-[#A1AEBB] font-mono mt-0.5">
+                            {inv.items?.length || 0} items
+                          </div>
+                        </div>
+                      </div>
+
+                      <div className="flex items-center justify-between text-xs pt-1 border-t border-white/[0.04]">
+                        <div className="flex items-center gap-1.5 flex-wrap">
+                          <span className={`px-2 py-0.5 rounded text-[10px] font-bold border ${pStyle.badge}`}>
+                            {pStyle.label}
+                          </span>
+                          <span
+                            className={`px-2 py-0.5 rounded text-[10px] font-bold border ${
+                              isCompleted
+                                ? "bg-[#6EE7B7]/12 text-[#6EE7B7] border-[#6EE7B7]/30"
+                                : "bg-[#FB7185]/12 text-[#FB7185] border-[#FB7185]/30"
+                            }`}
+                          >
+                            {isCompleted ? "Completed" : inv.status}
+                          </span>
+                          <span className="font-mono text-[10px] text-[#A1AEBB]">
+                            {new Date(inv.created_at).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
+                          </span>
+                        </div>
+
+                        <div className="flex items-center gap-1">
+                          <button
+                            type="button"
+                            onClick={() => setSelectedInvoice(inv)}
+                            className="p-1.5 rounded-lg text-[#A1AEBB] hover:text-[#F8FAFC] bg-white/[0.05]"
+                            title="View"
+                          >
+                            <Eye className="w-3.5 h-3.5" />
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => setPrintInvoice(inv)}
+                            className="p-1.5 rounded-lg text-[#7DD3FC] hover:bg-[#7DD3FC]/10 bg-white/[0.05]"
+                            title="Print"
+                          >
+                            <Printer className="w-3.5 h-3.5" />
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => handleShareWhatsApp(inv)}
+                            className="p-1.5 rounded-lg text-[#6EE7B7] hover:bg-[#5EEAD4]/10 bg-white/[0.05]"
+                            title="WhatsApp"
+                          >
+                            <MessageCircle className="w-3.5 h-3.5" />
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </>
           )}
         </div>
       </div>

@@ -887,8 +887,69 @@ export const AnalyticsPage: React.FC = () => {
                     No product sales recorded yet.
                   </div>
                 ) : (
-                  <div className="overflow-x-auto -mx-2 px-2">
-                    <table className="w-full text-left text-xs">
+                  <>
+                    {/* Mobile SKU Cards (<md) */}
+                    <div className="block md:hidden divide-y divide-white/[0.08]">
+                      {sortedSkus.map((p, idx) => {
+                        const marginBadgeClass =
+                          p.margin_percent < 0
+                            ? "bg-[#FB7185]/12 text-[#FB7185] border-[#FB7185]/35"
+                            : p.margin_percent >= 25
+                            ? "bg-[#6EE7B7]/12 text-[#6EE7B7] border-[#6EE7B7]/35"
+                            : p.margin_percent < 12
+                            ? "bg-[#FBBF24]/12 text-[#FBBF24] border-[#FBBF24]/35"
+                            : "bg-[#7DD3FC]/12 text-[#7DD3FC] border-[#7DD3FC]/35";
+
+                        return (
+                          <div key={p.product_id} className="py-3 space-y-2">
+                            <div className="flex items-start justify-between gap-2">
+                              <div className="flex items-center gap-2 min-w-0">
+                                <span className="text-[10px] font-mono text-[#A1AEBB]/65 tabular-nums shrink-0">
+                                  #{idx + 1}
+                                </span>
+                                <div className="min-w-0">
+                                  <div className="font-semibold text-[#F8FAFC] text-xs truncate">
+                                    <KannadaText text={p.product_name} />
+                                  </div>
+                                  {p.category_name && (
+                                    <span className="text-[10.5px] text-[#A1AEBB]/75">
+                                      <KannadaText text={p.category_name} />
+                                    </span>
+                                  )}
+                                </div>
+                              </div>
+                              <span
+                                className={`inline-block px-1.5 py-0.5 rounded text-[10px] font-bold border shrink-0 ${marginBadgeClass}`}
+                              >
+                                {p.margin_percent.toFixed(1)}% margin
+                              </span>
+                            </div>
+
+                            <div className="flex items-center justify-between text-xs font-mono pt-1">
+                              <span className="text-[#A1AEBB]">
+                                {p.units_sold} units
+                              </span>
+                              <div className="space-x-3 text-right">
+                                <span className="font-semibold text-[#F8FAFC]">
+                                  {formatMoney(p.revenue)}
+                                </span>
+                                <span
+                                  className={`font-semibold ${
+                                    p.gross_profit >= 0 ? "text-[#6EE7B7]" : "text-[#FB7185]"
+                                  }`}
+                                >
+                                  {formatMoney(p.gross_profit)}
+                                </span>
+                              </div>
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+
+                    {/* Desktop SKU Table (>=md) */}
+                    <div className="hidden md:block overflow-x-auto -mx-2 px-2">
+                      <table className="w-full text-left text-xs">
                       <thead className="bg-[#080B10]/35 border-y border-white/[0.08] text-[10.5px] text-[#A1AEBB] font-semibold uppercase tracking-[0.08em]">
                         <tr>
                           <th className="py-2.5 px-3">Product</th>
@@ -957,6 +1018,7 @@ export const AnalyticsPage: React.FC = () => {
                       </tbody>
                     </table>
                   </div>
+                  </>
                 )}
               </div>
 

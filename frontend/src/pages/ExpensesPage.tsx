@@ -771,8 +771,91 @@ export const ExpensesPage: React.FC = () => {
               </div>
             </div>
           ) : (
-            <div className="overflow-x-auto">
-              <table className="w-full text-left text-xs">
+            <>
+              {/* Mobile Expense Card List View (<md) */}
+              <div className="block md:hidden divide-y divide-white/[0.08]">
+                {filteredExpenses.map((e) => {
+                  const meta = getCategoryMeta(e.category);
+                  const Icon = meta.icon;
+                  const modeUpper = e.payment_method.toUpperCase();
+
+                  return (
+                    <div key={e.id} className="p-4 space-y-2.5">
+                      <div className="flex items-start justify-between gap-3">
+                        <div className="flex items-center gap-2 min-w-0">
+                          <span
+                            className={`p-2 rounded-xl border shrink-0 ${meta.color}`}
+                          >
+                            <Icon className="w-4 h-4" />
+                          </span>
+                          <div className="min-w-0">
+                            <span className="text-[11px] font-semibold text-[#A1AEBB] block">
+                              {isKn ? meta.labelKn : meta.labelEn}
+                            </span>
+                            <div className="font-semibold text-[#F8FAFC] text-sm leading-snug">
+                              <KannadaText text={e.title} />
+                            </div>
+                          </div>
+                        </div>
+
+                        <div className="text-right shrink-0">
+                          <span className="font-mono font-bold text-sm text-[#FB7185] tabular-nums block">
+                            -{formatMoney(e.amount)}
+                          </span>
+                          <span
+                            className={`inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-bold border mt-0.5 ${
+                              modeUpper === "CASH"
+                                ? "bg-[#FBBF24]/12 text-[#FBBF24] border-[#FBBF24]/30"
+                                : modeUpper === "UPI"
+                                ? "bg-[#7DD3FC]/12 text-[#7DD3FC] border-[#7DD3FC]/30"
+                                : "bg-[#A78BFA]/12 text-[#A78BFA] border-[#A78BFA]/30"
+                            }`}
+                          >
+                            {tData(e.payment_method).replace(/_/g, " ")}
+                          </span>
+                        </div>
+                      </div>
+
+                      {(e.notes || e.created_by_name) && (
+                        <div className="text-[11px] text-[#A1AEBB]/80 bg-white/[0.02] p-2 rounded-lg border border-white/[0.05]">
+                          {e.notes && (
+                            <p className="italic">
+                              <KannadaText text={e.notes} />
+                            </p>
+                          )}
+                          {e.created_by_name && (
+                            <span className="text-[10px] text-[#A1AEBB]/65 block mt-0.5">
+                              {isKn ? "ನಮೂದಿಸಿದವರು:" : "By"}{" "}
+                              <KannadaText text={e.created_by_name} />
+                            </span>
+                          )}
+                        </div>
+                      )}
+
+                      <div className="flex items-center justify-between pt-1 text-xs">
+                        <span className="text-[#A1AEBB] font-mono text-[11px] tabular-nums">
+                          {formatDateLocalized(e.expense_date)}
+                        </span>
+
+                        <button
+                          type="button"
+                          onClick={() => handleDeleteExpense(e.id)}
+                          disabled={deletingId === e.id}
+                          className="px-2.5 py-1.5 rounded-lg text-xs font-medium text-[#FB7185]/80 hover:text-[#FB7185] hover:bg-[#FB7185]/10 border border-white/[0.08] transition-colors flex items-center gap-1 disabled:opacity-40"
+                          aria-label={`Delete ${e.title}`}
+                        >
+                          <Trash2 className="w-3.5 h-3.5" />
+                          <span>Delete</span>
+                        </button>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+
+              {/* Desktop Table View (>=md) */}
+              <div className="hidden md:block overflow-x-auto">
+                <table className="w-full text-left text-xs">
                 <thead className="bg-[#080B10]/35 border-b border-white/[0.08] text-[10.5px] text-[#A1AEBB] font-semibold uppercase tracking-[0.1em]">
                   <tr>
                     <th className="px-5 sm:px-7 py-3">Date</th>
@@ -866,14 +949,15 @@ export const ExpensesPage: React.FC = () => {
                 </tfoot>
               </table>
             </div>
+            </>
           )}
         </div>
       </div>
 
       {/* Record Operational Expense Modal (High-Contrast Midnight Mist Glass) */}
       {showAddModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#080B10]/80 backdrop-blur-md p-4">
-          <div className="liquid-modal max-w-md w-full p-6 text-[#F8FAFC] space-y-4">
+        <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-[#080B10]/80 backdrop-blur-md p-0 sm:p-4 pb-[calc(1rem+env(safe-area-inset-bottom,0px))] sm:pb-4 overflow-y-auto">
+          <div className="liquid-modal max-w-md w-full p-5 sm:p-6 text-[#F8FAFC] space-y-4 rounded-t-[28px] sm:rounded-2xl max-h-[90vh] overflow-y-auto">
             <div className="flex items-start justify-between pb-3 border-b border-white/[0.08]">
               <div className="flex items-center gap-3">
                 <div className="w-8 h-8 rounded-full bg-[#080B10] border border-[#5EEAD4]/40 text-[#6EE7B7] flex items-center justify-center shadow-[0_0_12px_rgba(94,234,212,0.2)] shrink-0">

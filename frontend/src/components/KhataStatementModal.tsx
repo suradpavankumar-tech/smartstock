@@ -107,8 +107,8 @@ export const KhataStatementModal: React.FC<KhataStatementModalProps> = ({
   };
 
   return createPortal(
-    <div className="fixed inset-0 z-50 bg-[#080B10]/80 backdrop-blur-md flex items-center justify-center p-4 overflow-y-auto">
-      <div className="liquid-modal max-w-lg w-full flex flex-col max-h-[90vh] overflow-hidden text-[#F8FAFC]">
+    <div className="fixed inset-0 z-50 bg-[#080B10]/80 backdrop-blur-md flex items-end sm:items-center justify-center p-0 sm:p-4 pb-[calc(1rem+env(safe-area-inset-bottom,0px))] sm:pb-4 overflow-y-auto">
+      <div className="liquid-modal max-w-lg w-full flex flex-col max-h-[90vh] rounded-t-[28px] sm:rounded-2xl overflow-hidden text-[#F8FAFC]">
         {/* Header */}
         <div className="px-6 py-4 border-b border-white/10 flex items-center justify-between">
           <div className="flex items-center gap-2.5">
@@ -214,7 +214,7 @@ export const KhataStatementModal: React.FC<KhataStatementModalProps> = ({
         </div>
 
         {/* Footer */}
-        <div className="p-4 border-t border-white/10 flex items-center justify-between">
+        <div className="p-4 border-t border-white/10 flex flex-wrap items-center justify-between gap-2">
           <button
             onClick={() => window.print()}
             className="px-3.5 py-2 text-xs font-semibold rounded-xl liquid-btn-secondary flex items-center gap-1.5 active:scale-[0.98]"

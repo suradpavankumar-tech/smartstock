@@ -832,8 +832,118 @@ export const ReorderPage: React.FC<ReorderPageProps> = ({ onNavigateTab }) => {
               </div>
             </div>
           ) : (
-            <div className="overflow-x-auto">
-              <table className="w-full text-left text-xs">
+            <>
+              {/* Mobile Card List View (<md) */}
+              <div className="block md:hidden divide-y divide-white/[0.08]">
+                {filtered.map((r) => {
+                  const isSelected = selectedIds.includes(r.product_id);
+                  const qty =
+                    customQuantities[r.product_id] !== undefined
+                      ? customQuantities[r.product_id]
+                      : r.recommended_order_qty;
+                  const lineTotal = qty * r.unit_cost;
+                  const cfg =
+                    URGENCY_CONFIG[r.urgency_level as UrgencyTier] || URGENCY_CONFIG.HEALTHY;
+
+                  return (
+                    <div
+                      key={r.product_id}
+                      className={`p-4 space-y-3 transition-colors ${
+                        isSelected ? "bg-[#5EEAD4]/[0.04]" : ""
+                      }`}
+                    >
+                      <div className="flex items-start justify-between gap-3">
+                        <div className="flex items-start gap-2.5 min-w-0">
+                          <input
+                            type="checkbox"
+                            checked={isSelected}
+                            onChange={() => handleToggleSelect(r.product_id)}
+                            aria-label={`Select ${r.product_name}`}
+                            className="mt-1 rounded border-white/25 bg-[#080B10] text-[#5EEAD4] focus:ring-[#5EEAD4] cursor-pointer"
+                          />
+                          <div className="min-w-0">
+                            <div className="font-semibold text-[#F8FAFC] text-sm truncate">
+                              <KannadaText text={r.product_name} />
+                            </div>
+                            <div className="text-[11px] text-[#7DD3FC] mt-0.5 truncate">
+                              {r.supplier_name ? `Distributor: ${r.supplier_name}` : "Assign supplier on PO"}
+                              {r.sku ? <span className="text-[#A1AEBB]/75 font-mono"> • {r.sku}</span> : null}
+                            </div>
+                          </div>
+                        </div>
+
+                        <span
+                          className={`inline-flex items-center gap-1.5 px-2 py-0.5 rounded-lg text-[10px] font-bold border shrink-0 ${cfg.badge}`}
+                        >
+                          <span className={`w-1.5 h-1.5 rounded-full ${cfg.dot}`} />
+                          {cfg.label}
+                        </span>
+                      </div>
+
+                      <p className="text-[11px] text-[#A1AEBB]/90 line-clamp-2">
+                        {r.reason}
+                      </p>
+
+                      <div className="grid grid-cols-2 gap-2 text-xs bg-white/[0.02] p-2.5 rounded-xl border border-white/[0.06] font-mono tabular-nums">
+                        <div>
+                          <span className="text-[10px] font-sans text-[#A1AEBB] uppercase tracking-wider block">
+                            Stock / Runway
+                          </span>
+                          <span className="text-[#F8FAFC] font-bold">
+                            {Number(Number(r.current_stock ?? 0).toFixed(1))} {r.unit}
+                          </span>
+                          <span
+                            className={`block text-[10.5px] ${
+                              r.stockout_risk_days != null && r.stockout_risk_days <= 3
+                                ? "text-[#FB7185] font-semibold"
+                                : "text-[#A1AEBB]"
+                            }`}
+                          >
+                            {r.stockout_risk_days != null && r.stockout_risk_days < 900
+                              ? `~${Number(r.stockout_risk_days).toFixed(1)}d runway`
+                              : "Healthy buffer"}
+                          </span>
+                        </div>
+
+                        <div className="text-right">
+                          <span className="text-[10px] font-sans text-[#A1AEBB] uppercase tracking-wider block">
+                            Recommended
+                          </span>
+                          <span className="text-[#6EE7B7] font-bold">
+                            +{Number(Number(qty ?? 0).toFixed(1))} {r.unit}
+                          </span>
+                          <span className="block text-[10.5px] text-[#A1AEBB]">
+                            {formatMoney(lineTotal)}
+                          </span>
+                        </div>
+                      </div>
+
+                      <div className="flex items-center justify-between pt-1">
+                        <span className="text-[11px] text-[#A1AEBB] font-mono">
+                          ROP: {Number(r.reorder_point ?? 0).toFixed(1)}
+                        </span>
+
+                        <button
+                          type="button"
+                          onClick={() => handleOpenPOModal(r.product_id)}
+                          className={`inline-flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs font-bold ${
+                            r.urgency_level === "CRITICAL" || r.urgency_level === "HIGH"
+                              ? "liquid-btn-primary"
+                              : "liquid-btn-secondary text-[#6EE7B7]"
+                          }`}
+                        >
+                          <span>Quick Order</span>
+                          <ArrowRight className="w-3.5 h-3.5" />
+                        </button>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+
+              {/* Desktop Table View (>=md) */}
+              <div className="hidden md:block overflow-x-auto">
+                <table className="w-full text-left text-xs">
                 <thead className="bg-[#080B10]/35 border-b border-white/[0.08] text-[10.5px] text-[#A1AEBB] font-semibold uppercase tracking-[0.1em]">
                   <tr>
                     <th className="px-3 sm:px-5 py-3 text-center w-10">
@@ -972,6 +1082,7 @@ export const ReorderPage: React.FC<ReorderPageProps> = ({ onNavigateTab }) => {
                 </tbody>
               </table>
             </div>
+            </>
           )}
         </div>
       </div>
@@ -979,8 +1090,8 @@ export const ReorderPage: React.FC<ReorderPageProps> = ({ onNavigateTab }) => {
       {/* Purchase Order Generation Modal (Portalled) */}
       {isModalOpen &&
         createPortal(
-          <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#080B10]/80 backdrop-blur-md p-4 overflow-y-auto">
-            <div className="liquid-modal max-w-2xl w-full p-6 text-[#F8FAFC] space-y-4 max-h-[92vh] overflow-y-auto">
+          <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-[#080B10]/80 backdrop-blur-md p-0 sm:p-4 pb-[calc(1rem+env(safe-area-inset-bottom,0px))] sm:pb-4 overflow-y-auto">
+            <div className="liquid-modal max-w-2xl w-full p-5 sm:p-6 text-[#F8FAFC] space-y-4 rounded-t-[28px] sm:rounded-2xl max-h-[90vh] overflow-y-auto">
               <div className="flex items-start justify-between pb-3 border-b border-white/[0.08]">
                 <div className="flex items-center gap-3">
                   <div className="w-8 h-8 rounded-full bg-[#080B10] border border-[#5EEAD4]/40 text-[#6EE7B7] flex items-center justify-center shrink-0">

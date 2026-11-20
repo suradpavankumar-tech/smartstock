@@ -78,8 +78,10 @@ export const AgentPage: React.FC<AgentPageProps> = ({
   const { language: appLanguage } = useLanguage();
   const userRole = currentBusiness?.role || "OWNER";
 
-  // Clean ChatGPT Layout State
-  const [showSidebar, setShowSidebar] = useState(true);
+  // Clean ChatGPT Layout State (Desktop open by default, mobile closed)
+  const [showSidebar, setShowSidebar] = useState(() =>
+    typeof window !== "undefined" ? window.innerWidth >= 768 : false
+  );
   const [plusMenuOpen, setPlusMenuOpen] = useState(false);
 
   // Runtime & Error State
@@ -560,7 +562,7 @@ export const AgentPage: React.FC<AgentPageProps> = ({
 
   return (
     <div className="max-w-7xl mx-auto">
-      <div className="h-[calc(100vh-7.25rem)] min-h-[540px] rounded-[24px] bg-gradient-to-b from-[rgba(48,62,72,0.58)] via-[rgba(30,40,48,0.55)] to-[#080B10]/95 border border-white/[0.14] shadow-[0_30px_70px_-15px_rgba(0,0,0,0.9),0_0_36px_-8px_rgba(94,234,212,0.1)] relative overflow-hidden backdrop-blur-2xl flex flex-col">
+      <div className="h-[calc(100dvh-7.5rem-env(safe-area-inset-bottom,0px))] sm:h-[calc(100vh-7.25rem)] min-h-[460px] sm:min-h-[540px] rounded-[24px] bg-gradient-to-b from-[rgba(48,62,72,0.58)] via-[rgba(30,40,48,0.55)] to-[#080B10]/95 border border-white/[0.14] shadow-[0_30px_70px_-15px_rgba(0,0,0,0.9),0_0_36px_-8px_rgba(94,234,212,0.1)] relative overflow-hidden backdrop-blur-2xl flex flex-col">
         {/* Hidden shared file input */}
         <input
           ref={fileInputRef}
@@ -655,45 +657,66 @@ export const AgentPage: React.FC<AgentPageProps> = ({
 
         {/* MAIN SPLIT BODY: CLEAN HISTORY + CHAT STREAM */}
         <div className="flex-1 min-h-0 flex relative">
-          {/* Collapsible History Sidebar */}
+          {/* Collapsible History Sidebar (Mobile Drawer + Desktop Sidebar) */}
           {showSidebar && (
-            <aside className="hidden md:flex w-[240px] shrink-0 flex-col border-r border-white/[0.08] bg-[#080B10]/30">
-              <div className="flex-1 overflow-y-auto p-3 space-y-1">
-                <div className="px-2.5 pb-1.5 pt-0.5 text-[11px] font-medium text-[#A1AEBB]/70">
-                  Recent chats
+            <>
+              {/* Mobile Backdrop */}
+              <div
+                className="md:hidden fixed inset-0 z-30 bg-[#080B10]/75 backdrop-blur-sm"
+                onClick={() => setShowSidebar(false)}
+              />
+              <aside className="fixed inset-y-0 left-0 z-40 w-72 md:static md:w-[240px] shrink-0 flex flex-col border-r border-white/[0.08] bg-[#0B1018] md:bg-[#080B10]/30 shadow-2xl md:shadow-none transition-transform">
+                <div className="md:hidden flex items-center justify-between px-4 py-3 border-b border-white/[0.08]">
+                  <span className="text-xs font-bold text-[#F8FAFC]">Chat History</span>
+                  <button
+                    type="button"
+                    onClick={() => setShowSidebar(false)}
+                    className="p-1.5 rounded-lg text-[#A1AEBB] hover:text-[#F8FAFC] hover:bg-white/[0.06]"
+                    aria-label="Close chat history"
+                  >
+                    <X className="w-4 h-4" />
+                  </button>
                 </div>
-                {conversations.length === 0 ? (
-                  <div className="px-2.5 py-3 text-xs text-[#A1AEBB]/65 leading-relaxed">
-                    Your conversations will appear here.
+                <div className="flex-1 overflow-y-auto p-3 space-y-1">
+                  <div className="px-2.5 pb-1.5 pt-0.5 text-[11px] font-medium text-[#A1AEBB]/70">
+                    Recent chats
                   </div>
-                ) : (
-                  conversations.map((c) => {
-                    const active = activeConversationId === c.id;
-                    return (
-                      <div
-                        key={c.id}
-                        onClick={() => void selectConversation(c)}
-                        className={`group flex items-center justify-between gap-2 px-3 py-2 rounded-xl cursor-pointer transition-colors ${
-                          active
-                            ? "bg-white/[0.09] text-[#F8FAFC]"
-                            : "text-[#CBD5E1] hover:bg-white/[0.05] hover:text-[#F8FAFC]"
-                        }`}
-                      >
-                        <span className="text-xs truncate flex-1">{c.title}</span>
-                        <button
-                          type="button"
-                          onClick={(e) => void handleDeleteConversation(c.id, e)}
-                          title="Delete chat"
-                          className="p-1 rounded text-[#A1AEBB] hover:text-[#FB7185] opacity-0 group-hover:opacity-100 transition-opacity shrink-0"
+                  {conversations.length === 0 ? (
+                    <div className="px-2.5 py-3 text-xs text-[#A1AEBB]/65 leading-relaxed">
+                      Your conversations will appear here.
+                    </div>
+                  ) : (
+                    conversations.map((c) => {
+                      const active = activeConversationId === c.id;
+                      return (
+                        <div
+                          key={c.id}
+                          onClick={() => {
+                            void selectConversation(c);
+                            if (window.innerWidth < 768) setShowSidebar(false);
+                          }}
+                          className={`group flex items-center justify-between gap-2 px-3 py-2 rounded-xl cursor-pointer transition-colors ${
+                            active
+                              ? "bg-white/[0.09] text-[#F8FAFC]"
+                              : "text-[#CBD5E1] hover:bg-white/[0.05] hover:text-[#F8FAFC]"
+                          }`}
                         >
-                          <Trash2 className="w-3.5 h-3.5" />
-                        </button>
-                      </div>
-                    );
-                  })
-                )}
-              </div>
-            </aside>
+                          <span className="text-xs truncate flex-1">{c.title}</span>
+                          <button
+                            type="button"
+                            onClick={(e) => void handleDeleteConversation(c.id, e)}
+                            title="Delete chat"
+                            className="p-1 rounded text-[#A1AEBB] hover:text-[#FB7185] opacity-0 group-hover:opacity-100 transition-opacity shrink-0"
+                          >
+                            <Trash2 className="w-3.5 h-3.5" />
+                          </button>
+                        </div>
+                      );
+                    })
+                  )}
+                </div>
+              </aside>
+            </>
           )}
 
           {/* MAIN CHAT AREA */}
@@ -921,7 +944,7 @@ export const AgentPage: React.FC<AgentPageProps> = ({
 
                 {/* Minimal `+` Attachments & Language Popover */}
                 {plusMenuOpen && (
-                  <div className="absolute bottom-full left-0 mb-2 w-72 rounded-2xl bg-[#0D131D]/95 border border-white/[0.15] shadow-[0_20px_50px_rgba(0,0,0,0.85)] backdrop-blur-2xl p-2.5 space-y-2.5 z-30">
+                  <div className="absolute bottom-full left-0 mb-2 w-72 max-w-[calc(100vw-2.5rem)] rounded-2xl bg-[#0D131D]/95 border border-white/[0.15] shadow-[0_20px_50px_rgba(0,0,0,0.85)] backdrop-blur-2xl p-2.5 space-y-2.5 z-30">
                     <div className="space-y-1.5">
                       <select
                         value={docTypeSelect}

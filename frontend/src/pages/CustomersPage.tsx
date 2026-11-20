@@ -605,8 +605,143 @@ export const CustomersPage: React.FC = () => {
               </div>
             </div>
           ) : (
-            <div className="overflow-x-auto">
-              <table className="w-full text-left text-xs">
+            <>
+              {/* Mobile Card List View (<md) */}
+              <div className="block md:hidden divide-y divide-white/[0.08]">
+                {filteredCustomers.map((c) => {
+                  const due = c.outstanding_balance || 0;
+                  const isDue = due > 0;
+                  const message = isDue
+                    ? buildKhataReminderWhatsAppMessage(
+                        c.name,
+                        due,
+                        business?.name || "SmartStock Retail",
+                        business?.upi_vpa,
+                        isKn
+                      )
+                    : "";
+                  const reminderUrl = isDue ? buildWhatsAppUrl(c.phone, message) : null;
+
+                  return (
+                    <div key={c.id} className="p-4 space-y-3">
+                      <div className="flex items-start justify-between gap-3">
+                        <div className="flex items-center gap-2.5 min-w-0">
+                          <div
+                            className={`w-9 h-9 rounded-full flex items-center justify-center text-xs font-bold border shrink-0 ${
+                              isDue
+                                ? "bg-[#FBBF24]/15 text-[#FBBF24] border-[#FBBF24]/35"
+                                : "bg-[#5EEAD4]/15 text-[#6EE7B7] border-[#5EEAD4]/35"
+                            }`}
+                          >
+                            {c.name.trim().charAt(0).toUpperCase() || "C"}
+                          </div>
+                          <div className="min-w-0">
+                            <div className="font-semibold text-[#F8FAFC] text-sm truncate">
+                              <KannadaText text={c.name} />
+                            </div>
+                            {c.address ? (
+                              <p className="text-[11px] text-[#A1AEBB] truncate mt-0.5">
+                                <KannadaText text={c.address} />
+                              </p>
+                            ) : c.email ? (
+                              <p className="text-[11px] text-[#A1AEBB] truncate mt-0.5">
+                                {c.email}
+                              </p>
+                            ) : null}
+                          </div>
+                        </div>
+
+                        <div className="text-right shrink-0">
+                          <span
+                            className={`font-mono font-bold text-sm tabular-nums block ${
+                              isDue ? "text-[#FBBF24]" : "text-[#6EE7B7]"
+                            }`}
+                          >
+                            {formatMoney(due)}
+                          </span>
+                          <span
+                            className={`inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-bold mt-0.5 ${
+                              isDue
+                                ? "bg-[#FBBF24]/12 text-[#FBBF24] border border-[#FBBF24]/35"
+                                : "bg-[#6EE7B7]/12 text-[#6EE7B7] border border-[#6EE7B7]/35"
+                            }`}
+                          >
+                            {isDue ? (isKn ? "ಬಾಕಿ ಇದೆ" : "Due") : (isKn ? "ಚುಕ್ತಾ" : "Clear")}
+                          </span>
+                        </div>
+                      </div>
+
+                      <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-[#A1AEBB]">
+                        {c.phone ? (
+                          <a
+                            href={`tel:${c.phone}`}
+                            className="inline-flex items-center gap-1 font-mono text-[#7DD3FC] hover:underline"
+                          >
+                            <Phone className="w-3 h-3 text-[#7DD3FC]" />
+                            <span>{c.phone}</span>
+                          </a>
+                        ) : (
+                          <span className="italic text-[#A1AEBB]/60 text-[11px]">No phone</span>
+                        )}
+                        {c.gstin && (
+                          <span className="font-mono text-[10.5px] text-[#A1AEBB]/80">
+                            GSTIN: {c.gstin}
+                          </span>
+                        )}
+                      </div>
+
+                      <div className="flex items-center justify-end gap-1.5 pt-1">
+                        <button
+                          type="button"
+                          onClick={() => openEditCustomerModal(c)}
+                          className="px-2.5 py-1.5 rounded-lg text-xs font-medium text-[#A1AEBB] hover:text-[#7DD3FC] hover:bg-[#7DD3FC]/10 border border-white/[0.08] transition-colors"
+                          aria-label={`Edit ${c.name}`}
+                        >
+                          <Pencil className="w-3.5 h-3.5 inline mr-1" />
+                          <span>Edit</span>
+                        </button>
+
+                        <button
+                          type="button"
+                          onClick={() => setStatementCustomer(c)}
+                          className="liquid-btn-secondary inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-xs font-semibold"
+                        >
+                          <FileText className="w-3.5 h-3.5 text-[#7DD3FC]" />
+                          <span>Statement</span>
+                        </button>
+
+                        {isDue && (
+                          <>
+                            <button
+                              type="button"
+                              onClick={() => openWhatsAppUrl(reminderUrl)}
+                              disabled={!reminderUrl}
+                              className="liquid-btn-secondary inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-xs font-semibold text-[#6EE7B7] disabled:opacity-40"
+                              aria-label={`Remind ${c.name}`}
+                            >
+                              <MessageCircle className="w-3.5 h-3.5" />
+                              <span>Remind</span>
+                            </button>
+
+                            <button
+                              type="button"
+                              onClick={() => openPaymentModal(c)}
+                              className="liquid-btn-primary inline-flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs font-bold"
+                            >
+                              <IndianRupee className="w-3.5 h-3.5" />
+                              <span>Collect</span>
+                            </button>
+                          </>
+                        )}
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+
+              {/* Desktop Table View (>=md) */}
+              <div className="hidden md:block overflow-x-auto">
+                <table className="w-full text-left text-xs">
                 <thead className="bg-[#080B10]/35 border-b border-white/[0.08] text-[10.5px] text-[#A1AEBB] font-semibold uppercase tracking-[0.1em]">
                   <tr>
                     <th className="px-5 sm:px-6 py-3">Customer</th>
@@ -763,6 +898,7 @@ export const CustomersPage: React.FC = () => {
                 </tbody>
               </table>
             </div>
+            </>
           )}
         </div>
       </div>
@@ -770,8 +906,8 @@ export const CustomersPage: React.FC = () => {
       {/* Add / Edit Customer Modal (Portalled) */}
       {showCustomerModal &&
         createPortal(
-          <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#080B10]/80 backdrop-blur-md p-4 overflow-y-auto">
-            <div className="liquid-modal max-w-md w-full p-6 text-[#F8FAFC] space-y-4">
+          <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-[#080B10]/80 backdrop-blur-md p-0 sm:p-4 pb-[calc(1rem+env(safe-area-inset-bottom,0px))] sm:pb-4 overflow-y-auto">
+            <div className="liquid-modal max-w-md w-full p-5 sm:p-6 text-[#F8FAFC] space-y-4 rounded-t-[28px] sm:rounded-2xl max-h-[90vh] overflow-y-auto">
               <div className="flex items-start justify-between pb-3 border-b border-white/[0.08]">
                 <div className="flex items-center gap-3">
                   <div className="w-8 h-8 rounded-full bg-[#080B10] border border-[#5EEAD4]/40 text-[#6EE7B7] flex items-center justify-center shrink-0">
@@ -905,8 +1041,8 @@ export const CustomersPage: React.FC = () => {
       {/* Receive Khata Payment Modal (Portalled) */}
       {paymentCustomer &&
         createPortal(
-          <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#080B10]/80 backdrop-blur-md p-4">
-            <div className="liquid-modal max-w-md w-full p-6 text-[#F8FAFC] space-y-4">
+          <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-[#080B10]/80 backdrop-blur-md p-0 sm:p-4 pb-[calc(1rem+env(safe-area-inset-bottom,0px))] sm:pb-4 overflow-y-auto">
+            <div className="liquid-modal max-w-md w-full p-5 sm:p-6 text-[#F8FAFC] space-y-4 rounded-t-[28px] sm:rounded-2xl max-h-[90vh] overflow-y-auto">
               <div className="flex items-start justify-between pb-3 border-b border-white/[0.08]">
                 <div className="flex items-center gap-3">
                   <div className="w-8 h-8 rounded-full bg-[#6EE7B7]/15 border border-[#6EE7B7]/40 text-[#6EE7B7] flex items-center justify-center shrink-0">

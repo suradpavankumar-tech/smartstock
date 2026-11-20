@@ -121,39 +121,39 @@ export const SimulatorPage: React.FC<SimulatorPageProps> = ({ onNavigateTab }) =
       </div>
 
       {/* Scenario Selector Tabs */}
-      <div className="flex border-b border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 rounded-t-xl px-2">
+      <div className="flex overflow-x-auto no-scrollbar border-b border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 rounded-t-xl px-2">
         <button
           onClick={() => setActiveTab("PRICE")}
-          className={`py-3.5 px-5 text-sm font-semibold border-b-2 transition-all flex items-center gap-2 ${
+          className={`py-3.5 px-4 text-xs sm:text-sm font-semibold border-b-2 transition-all flex items-center gap-2 whitespace-nowrap shrink-0 ${
             activeTab === "PRICE"
               ? "border-brand-600 text-brand-600 dark:border-brand-400 dark:text-brand-400"
               : "border-transparent text-slate-500 hover:text-slate-700 dark:hover:text-slate-300"
           }`}
         >
           <IndianRupee className="w-4 h-4" />
-          Scenario 1: Retail Price & Margin Elasticity
+          <span><span className="hidden sm:inline">Scenario 1: </span>Price Elasticity</span>
         </button>
         <button
           onClick={() => setActiveTab("DELAY")}
-          className={`py-3.5 px-5 text-sm font-semibold border-b-2 transition-all flex items-center gap-2 ${
+          className={`py-3.5 px-4 text-xs sm:text-sm font-semibold border-b-2 transition-all flex items-center gap-2 whitespace-nowrap shrink-0 ${
             activeTab === "DELAY"
               ? "border-brand-600 text-brand-600 dark:border-brand-400 dark:text-brand-400"
               : "border-transparent text-slate-500 hover:text-slate-700 dark:hover:text-slate-300"
           }`}
         >
           <Clock className="w-4 h-4" />
-          Scenario 2: Supplier Delay Stress-Test
+          <span><span className="hidden sm:inline">Scenario 2: </span>Supplier Delay</span>
         </button>
         <button
           onClick={() => setActiveTab("DEMAND")}
-          className={`py-3.5 px-5 text-sm font-semibold border-b-2 transition-all flex items-center gap-2 ${
+          className={`py-3.5 px-4 text-xs sm:text-sm font-semibold border-b-2 transition-all flex items-center gap-2 whitespace-nowrap shrink-0 ${
             activeTab === "DEMAND"
               ? "border-brand-600 text-brand-600 dark:border-brand-400 dark:text-brand-400"
               : "border-transparent text-slate-500 hover:text-slate-700 dark:hover:text-slate-300"
           }`}
         >
           <TrendingUp className="w-4 h-4" />
-          Scenario 3: Festive Surge / Demand Shock
+          <span><span className="hidden sm:inline">Scenario 3: </span>Festive Surge</span>
         </button>
       </div>
 
@@ -386,14 +386,48 @@ export const SimulatorPage: React.FC<SimulatorPageProps> = ({ onNavigateTab }) =
                 </div>
               )}
 
-              {/* Before vs After Product Comparison Table */}
+              {/* Before vs After Product Comparison Table & Mobile Cards */}
               {priceResult.product_results && priceResult.product_results.length > 0 && (
-                <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl overflow-hidden shadow-sm p-5 space-y-3">
+                <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl overflow-hidden shadow-sm p-4 sm:p-5 space-y-3">
                   <h4 className="font-bold text-slate-900 dark:text-white text-sm flex items-center gap-1.5">
                     <BarChart3 className="w-4 h-4 text-brand-600" />
                     Unit Economics: Before vs. After Simulation
                   </h4>
-                  <div className="overflow-x-auto">
+
+                  {/* Mobile Product Results Cards (<md) */}
+                  <div className="block md:hidden divide-y divide-slate-100 dark:divide-slate-800 -mx-4">
+                    {priceResult.product_results.map((item: any, idx: number) => (
+                      <div key={idx} className="p-3.5 space-y-2">
+                        <div className="flex items-start justify-between gap-2">
+                          <span className="font-bold text-slate-900 dark:text-white text-xs">{item.product_name}</span>
+                          <span className={`font-mono font-black text-xs shrink-0 ${item.monthly_profit_delta >= 0 ? "text-emerald-600" : "text-rose-600"}`}>
+                            {item.monthly_profit_delta >= 0 ? `+₹${item.monthly_profit_delta.toFixed(2)}` : `-₹${Math.abs(item.monthly_profit_delta).toFixed(2)}`}
+                          </span>
+                        </div>
+                        <div className="grid grid-cols-2 gap-2 text-[11px] bg-slate-50 dark:bg-slate-800/40 p-2 rounded-lg font-mono">
+                          <div>
+                            <span className="text-[9px] font-sans text-slate-400 block uppercase">Price Shift</span>
+                            <span>₹{item.base_selling_price.toFixed(2)} → <strong className="text-indigo-600 dark:text-indigo-400">₹{item.simulated_selling_price.toFixed(2)}</strong></span>
+                          </div>
+                          <div className="text-right">
+                            <span className="text-[9px] font-sans text-slate-400 block uppercase">Unit Margin</span>
+                            <span>₹{item.base_unit_margin.toFixed(2)} → <strong className="text-emerald-600">₹{item.simulated_unit_margin.toFixed(2)}</strong></span>
+                          </div>
+                          <div>
+                            <span className="text-[9px] font-sans text-slate-400 block uppercase">Monthly Units</span>
+                            <span>{item.base_monthly_units} → {item.simulated_monthly_units}</span>
+                          </div>
+                          <div className="text-right">
+                            <span className="text-[9px] font-sans text-slate-400 block uppercase">Cost Price</span>
+                            <span>₹{item.purchase_cost.toFixed(2)}</span>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+
+                  {/* Desktop Table View (>=md) */}
+                  <div className="hidden md:block overflow-x-auto">
                     <table className="w-full text-left text-xs">
                       <thead className="bg-slate-100 dark:bg-slate-800/80 text-slate-600 dark:text-slate-300 font-semibold uppercase tracking-wider">
                         <tr>
@@ -479,24 +513,26 @@ export const SimulatorPage: React.FC<SimulatorPageProps> = ({ onNavigateTab }) =
                   <span>Simulated Delivery Disruption:</span>
                   <span className="font-bold font-mono text-amber-600">+{delayDays} Days Delay</span>
                 </div>
-                <div className="flex items-center gap-3">
-                  {[3, 5, 7, 10, 14, 21].map((d) => (
-                    <button
-                      key={d}
-                      type="button"
-                      onClick={() => {
-                        setDelayDays(d);
-                        runDelaySimulation(d);
-                      }}
-                      className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors ${
-                        delayDays === d
-                          ? "bg-brand-600 text-white shadow-sm"
-                          : "bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200"
-                      }`}
-                    >
-                      +{d} Days
-                    </button>
-                  ))}
+                <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
+                  <div className="flex items-center gap-1.5 flex-wrap">
+                    {[3, 5, 7, 10, 14, 21].map((d) => (
+                      <button
+                        key={d}
+                        type="button"
+                        onClick={() => {
+                          setDelayDays(d);
+                          runDelaySimulation(d);
+                        }}
+                        className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors ${
+                          delayDays === d
+                            ? "bg-brand-600 text-white shadow-sm"
+                            : "bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200"
+                        }`}
+                      >
+                        +{d} Days
+                      </button>
+                    ))}
+                  </div>
                   <input
                     type="range"
                     min="1"
@@ -507,7 +543,7 @@ export const SimulatorPage: React.FC<SimulatorPageProps> = ({ onNavigateTab }) =
                       setDelayDays(val);
                       runDelaySimulation(val);
                     }}
-                    className="flex-1 accent-brand-600 cursor-pointer"
+                    className="flex-1 accent-brand-600 cursor-pointer min-w-[120px]"
                   />
                 </div>
               </div>
@@ -594,13 +630,61 @@ export const SimulatorPage: React.FC<SimulatorPageProps> = ({ onNavigateTab }) =
                 </div>
               )}
 
-              {/* Vulnerable Products Table */}
+              {/* Vulnerable Products Table & Mobile Cards */}
               {(delayResult.vulnerable_products || delayResult.impacted_products) && (
-                <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl overflow-hidden shadow-sm p-5 space-y-3">
+                <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl overflow-hidden shadow-sm p-4 sm:p-5 space-y-3">
                   <h4 className="font-bold text-slate-900 dark:text-white text-sm">
                     Stockout Vulnerability Breakdown (+{delayDays} Days Delay)
                   </h4>
-                  <div className="overflow-x-auto">
+
+                  {/* Mobile Vulnerable Cards (<md) */}
+                  <div className="block md:hidden divide-y divide-slate-100 dark:divide-slate-800 -mx-4">
+                    {(delayResult.vulnerable_products || delayResult.impacted_products).map((item: any, idx: number) => {
+                      const isCritical = item.risk_level === "CRITICAL" || item.projected_units_short > 0;
+                      const isWarning = item.risk_level === "WARNING";
+                      return (
+                        <div key={idx} className="p-3.5 space-y-2">
+                          <div className="flex items-start justify-between gap-2">
+                            <span className="font-bold text-slate-900 dark:text-white text-xs">{item.product_name}</span>
+                            <span className={`inline-flex px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider shrink-0 ${
+                              isCritical
+                                ? "bg-rose-100 text-rose-700 dark:bg-rose-950/60 dark:text-rose-300"
+                                : isWarning
+                                ? "bg-amber-100 text-amber-700 dark:bg-amber-950/60 dark:text-amber-300"
+                                : "bg-emerald-100 text-emerald-700 dark:bg-emerald-950/60 dark:text-emerald-300"
+                            }`}>
+                              {isCritical ? "Stockout" : isWarning ? "Buffer Low" : "Safe"}
+                            </span>
+                          </div>
+                          <div className="grid grid-cols-2 gap-2 text-[11px] bg-slate-50 dark:bg-slate-800/40 p-2 rounded-lg font-mono">
+                            <div>
+                              <span className="text-[9px] font-sans text-slate-400 block uppercase">Stock / Demand</span>
+                              <span>{item.current_stock} {item.unit || ""} ({item.avg_daily_demand?.toFixed(1) || item.daily_burn_rate?.toFixed(1) || "0.0"}/d)</span>
+                            </div>
+                            <div className="text-right">
+                              <span className="text-[9px] font-sans text-slate-400 block uppercase">Runway</span>
+                              <span>{item.buffer_days !== undefined ? `${item.buffer_days.toFixed(1)} days` : "—"}</span>
+                            </div>
+                            <div>
+                              <span className="text-[9px] font-sans text-slate-400 block uppercase">Units Short</span>
+                              <span className={`font-bold ${isCritical ? "text-rose-600" : "text-slate-500"}`}>
+                                {item.projected_units_short > 0 ? `-${item.projected_units_short.toFixed(1)} ${item.unit || ""}` : "0"}
+                              </span>
+                            </div>
+                            <div className="text-right">
+                              <span className="text-[9px] font-sans text-slate-400 block uppercase">Lost Sales</span>
+                              <span className={`font-bold ${isCritical ? "text-rose-600" : "text-slate-500"}`}>
+                                ₹{(item.lost_revenue || item.potential_lost_revenue || 0).toFixed(2)}
+                              </span>
+                            </div>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+
+                  {/* Desktop Table View (>=md) */}
+                  <div className="hidden md:block overflow-x-auto">
                     <table className="w-full text-left text-xs">
                       <thead className="bg-slate-100 dark:bg-slate-800/80 text-slate-600 dark:text-slate-300 font-semibold uppercase tracking-wider">
                         <tr>
@@ -698,24 +782,26 @@ export const SimulatorPage: React.FC<SimulatorPageProps> = ({ onNavigateTab }) =
                     {demandPercent > 0 ? `+${demandPercent}% Festive Surge` : `${demandPercent}% Seasonal Slump`}
                   </span>
                 </div>
-                <div className="flex items-center gap-3">
-                  {[-20, 15, 25, 50, 100].map((pct) => (
-                    <button
-                      key={pct}
-                      type="button"
-                      onClick={() => {
-                        setDemandPercent(pct);
-                        runDemandSimulation(pct);
-                      }}
-                      className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors ${
-                        demandPercent === pct
-                          ? "bg-brand-600 text-white shadow-sm"
-                          : "bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200"
-                      }`}
-                    >
-                      {pct > 0 ? `+${pct}%` : `${pct}%`}
-                    </button>
-                  ))}
+                <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
+                  <div className="flex items-center gap-1.5 flex-wrap">
+                    {[-20, 15, 25, 50, 100].map((pct) => (
+                      <button
+                        key={pct}
+                        type="button"
+                        onClick={() => {
+                          setDemandPercent(pct);
+                          runDemandSimulation(pct);
+                        }}
+                        className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors ${
+                          demandPercent === pct
+                            ? "bg-brand-600 text-white shadow-sm"
+                            : "bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200"
+                        }`}
+                      >
+                        {pct > 0 ? `+${pct}%` : `${pct}%`}
+                      </button>
+                    ))}
+                  </div>
                   <input
                     type="range"
                     min="-50"
@@ -727,7 +813,7 @@ export const SimulatorPage: React.FC<SimulatorPageProps> = ({ onNavigateTab }) =
                       setDemandPercent(val);
                       runDemandSimulation(val);
                     }}
-                    className="flex-1 accent-brand-600 cursor-pointer"
+                    className="flex-1 accent-brand-600 cursor-pointer min-w-[120px]"
                   />
                 </div>
               </div>
@@ -804,13 +890,61 @@ export const SimulatorPage: React.FC<SimulatorPageProps> = ({ onNavigateTab }) =
                 </div>
               )}
 
-              {/* Critical Depletion Lines Table */}
+              {/* Critical Depletion Lines Table & Mobile Cards */}
               {demandResult.critical_lines && demandResult.critical_lines.length > 0 && (
-                <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl overflow-hidden shadow-sm p-5 space-y-3">
+                <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl overflow-hidden shadow-sm p-4 sm:p-5 space-y-3">
                   <h4 className="font-bold text-slate-900 dark:text-white text-sm">
                     Product Depletion & Emergency Procurement Forecast ({demandPercent > 0 ? `+${demandPercent}% Surge` : `${demandPercent}% Slump`})
                   </h4>
-                  <div className="overflow-x-auto">
+
+                  {/* Mobile Critical Lines Cards (<md) */}
+                  <div className="block md:hidden divide-y divide-slate-100 dark:divide-slate-800 -mx-4">
+                    {demandResult.critical_lines.map((line: any, idx: number) => {
+                      const isCritical = line.urgency === "CRITICAL";
+                      const isHigh = line.urgency === "HIGH";
+                      return (
+                        <div key={idx} className="p-3.5 space-y-2">
+                          <div className="flex items-start justify-between gap-2">
+                            <span className="font-bold text-slate-900 dark:text-white text-xs">{line.product_name}</span>
+                            <span className={`inline-flex px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider shrink-0 ${
+                              isCritical
+                                ? "bg-rose-100 text-rose-700 dark:bg-rose-950/60 dark:text-rose-300"
+                                : isHigh
+                                ? "bg-amber-100 text-amber-700 dark:bg-amber-950/60 dark:text-amber-300"
+                                : "bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-400"
+                            }`}>
+                              {line.urgency}
+                            </span>
+                          </div>
+                          <div className="grid grid-cols-2 gap-2 text-[11px] bg-slate-50 dark:bg-slate-800/40 p-2 rounded-lg font-mono">
+                            <div>
+                              <span className="text-[9px] font-sans text-slate-400 block uppercase">Velocity (Norm → Surge)</span>
+                              <span>{line.normal_daily_burn}/d → <strong className="text-indigo-600 dark:text-indigo-400">{line.simulated_daily_burn}/d</strong></span>
+                            </div>
+                            <div className="text-right">
+                              <span className="text-[9px] font-sans text-slate-400 block uppercase">Runway Days</span>
+                              <span>{line.normal_runway_days}d → <strong className={isCritical ? "text-rose-600" : "text-amber-600"}>{line.simulated_runway_days}d</strong></span>
+                            </div>
+                            <div>
+                              <span className="text-[9px] font-sans text-slate-400 block uppercase">Emergency Qty</span>
+                              <span className="font-bold text-slate-800 dark:text-slate-200">
+                                {line.emergency_order_units > 0 ? `${line.emergency_order_units} ${line.unit || ""}` : "—"}
+                              </span>
+                            </div>
+                            <div className="text-right">
+                              <span className="text-[9px] font-sans text-slate-400 block uppercase">Capital Needed</span>
+                              <span className="font-bold text-brand-600 dark:text-brand-400">
+                                {line.capital_required > 0 ? `₹${line.capital_required.toFixed(2)}` : "₹0.00"}
+                              </span>
+                            </div>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+
+                  {/* Desktop Table View (>=md) */}
+                  <div className="hidden md:block overflow-x-auto">
                     <table className="w-full text-left text-xs">
                       <thead className="bg-slate-100 dark:bg-slate-800/80 text-slate-600 dark:text-slate-300 font-semibold uppercase tracking-wider">
                         <tr>

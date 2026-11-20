@@ -189,8 +189,9 @@ export const CameraBarcodeScannerModal: React.FC<CameraBarcodeScannerModalProps>
   };
 
   return createPortal(
-    <div className="fixed inset-0 z-50 bg-[#080B10]/80 backdrop-blur-md flex items-center justify-center p-4">
-      <div className="liquid-modal max-w-lg w-full overflow-hidden flex flex-col max-h-[90vh] text-[#F8FAFC]">
+    <div className="fixed inset-0 z-50 bg-[#080B10]/80 backdrop-blur-md flex items-end sm:items-center justify-center p-0 sm:p-4 pb-[calc(1rem+env(safe-area-inset-bottom,0px))] sm:pb-4 overflow-y-auto">
+      <div className="liquid-modal max-w-lg w-full overflow-hidden flex flex-col max-h-[92vh] text-[#F8FAFC] rounded-t-[28px] sm:rounded-2xl">
+        <div className="w-12 h-1 bg-white/20 rounded-full mx-auto my-3 block sm:hidden shrink-0" />
         {/* Header */}
         <div className="px-5 py-4 border-b border-white/10 flex items-center justify-between">
           <div className="flex items-center gap-2.5">

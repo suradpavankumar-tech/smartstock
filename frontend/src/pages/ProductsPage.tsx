@@ -1009,171 +1009,281 @@ export const ProductsPage: React.FC = () => {
                 </div>
               </div>
             ) : (
-              <div className="overflow-x-auto">
-                <table className="w-full text-left text-xs">
-                  <thead className="bg-[#080B10]/35 border-b border-white/[0.08] text-[10.5px] text-[#A1AEBB] font-semibold uppercase tracking-[0.1em]">
-                    <tr>
-                      <th className="px-4 sm:px-6 py-3">Product & Unit</th>
-                      <th className="px-2.5 py-3 whitespace-nowrap">SKU / Barcode</th>
-                      <th className="px-2.5 py-3">Section · Category</th>
-                      <th className="px-2.5 py-3 text-right whitespace-nowrap">Cost & Margin</th>
-                      <th className="px-2.5 py-3 text-right whitespace-nowrap">Selling Price</th>
-                      <th className="px-2.5 py-3 text-right whitespace-nowrap">Stock Level</th>
-                      <th className="px-2.5 py-3 text-center">Status</th>
-                      <th className="px-4 sm:px-6 py-3 text-right">Actions</th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-white/[0.06]">
-                    {filteredProducts.map((p) => {
-                      const isOut = p.current_stock <= 0;
-                      const isLow = !isOut && p.current_stock <= p.reorder_threshold;
-                      const marginPct =
-                        p.selling_price > 0
-                          ? ((p.selling_price - p.purchase_cost) / p.selling_price) * 100
-                          : 0;
+              <>
+                {/* Desktop Product Table (>=md) */}
+                <div className="hidden md:block overflow-x-auto">
+                  <table className="w-full text-left text-xs">
+                    <thead className="bg-[#080B10]/35 border-b border-white/[0.08] text-[10.5px] text-[#A1AEBB] font-semibold uppercase tracking-[0.1em]">
+                      <tr>
+                        <th className="px-4 sm:px-6 py-3">Product & Unit</th>
+                        <th className="px-2.5 py-3 whitespace-nowrap">SKU / Barcode</th>
+                        <th className="px-2.5 py-3">Section · Category</th>
+                        <th className="px-2.5 py-3 text-right whitespace-nowrap">Cost & Margin</th>
+                        <th className="px-2.5 py-3 text-right whitespace-nowrap">Selling Price</th>
+                        <th className="px-2.5 py-3 text-right whitespace-nowrap">Stock Level</th>
+                        <th className="px-2.5 py-3 text-center">Status</th>
+                        <th className="px-4 sm:px-6 py-3 text-right">Actions</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-white/[0.06]">
+                      {filteredProducts.map((p) => {
+                        const isOut = p.current_stock <= 0;
+                        const isLow = !isOut && p.current_stock <= p.reorder_threshold;
+                        const marginPct =
+                          p.selling_price > 0
+                            ? ((p.selling_price - p.purchase_cost) / p.selling_price) * 100
+                            : 0;
 
-                      return (
-                        <tr
-                          key={p.id}
-                          className="border-l-2 border-l-transparent hover:border-l-[#5EEAD4]/75 hover:bg-white/[0.025] transition-all"
-                        >
-                          <td className="px-4 sm:px-6 py-3">
-                            <div className="font-semibold text-[#F8FAFC] text-[13px] leading-snug">
-                              <KannadaText text={p.name} />
-                            </div>
-                            <div className="text-[10.5px] text-[#A1AEBB] mt-0.5 flex items-center gap-1.5">
-                              <span>
-                                {isKn ? "ಪ್ರಮಾಣ:" : "Unit:"} <KannadaText text={p.unit} />
+                        return (
+                          <tr
+                            key={p.id}
+                            className="border-l-2 border-l-transparent hover:border-l-[#5EEAD4]/75 hover:bg-white/[0.025] transition-all"
+                          >
+                            <td className="px-4 sm:px-6 py-3">
+                              <div className="font-semibold text-[#F8FAFC] text-[13px] leading-snug">
+                                <KannadaText text={p.name} />
+                              </div>
+                              <div className="text-[10.5px] text-[#A1AEBB] mt-0.5 flex items-center gap-1.5">
+                                <span>
+                                  {isKn ? "ಪ್ರಮಾಣ:" : "Unit:"} <KannadaText text={p.unit} />
+                                </span>
+                              </div>
+                            </td>
+
+                            <td className="px-2.5 py-3 font-mono text-[11px] text-[#A1AEBB] tabular-nums whitespace-nowrap">
+                              <div className="text-[#F8FAFC]/85">{p.sku || "—"}</div>
+                              <div className="text-[10px] text-[#A1AEBB]/70">
+                                {p.barcode || "No barcode"}
+                              </div>
+                            </td>
+
+                            <td className="px-2.5 py-3 whitespace-nowrap">
+                              <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-lg text-[10.5px] font-medium bg-white/[0.05] border border-white/[0.1] text-[#A1AEBB]">
+                                <span className="text-[#7DD3FC]">
+                                  <KannadaText text={p.section_name || "General"} />
+                                </span>
+                                <span className="text-white/25">›</span>
+                                <span className="text-[#F8FAFC]">
+                                  <KannadaText text={p.category_name || "General"} />
+                                </span>
                               </span>
-                            </div>
-                          </td>
+                            </td>
 
-                          <td className="px-2.5 py-3 font-mono text-[11px] text-[#A1AEBB] tabular-nums whitespace-nowrap">
-                            <div className="text-[#F8FAFC]/85">{p.sku || "—"}</div>
-                            <div className="text-[10px] text-[#A1AEBB]/70">
-                              {p.barcode || "No barcode"}
-                            </div>
-                          </td>
+                            <td className="px-2.5 py-3 text-right whitespace-nowrap tabular-nums">
+                              <div className="font-mono text-[#A1AEBB]">
+                                {formatMoney(p.purchase_cost)}
+                              </div>
+                              {p.selling_price > 0 && p.purchase_cost > 0 && (
+                                <div
+                                  className={`text-[10px] font-mono ${
+                                    marginPct >= 15
+                                      ? "text-[#6EE7B7]"
+                                      : marginPct >= 0
+                                      ? "text-[#7DD3FC]"
+                                      : "text-[#FB7185]"
+                                  }`}
+                                >
+                                  {marginPct.toFixed(1)}% margin
+                                </div>
+                              )}
+                            </td>
 
-                          <td className="px-2.5 py-3 whitespace-nowrap">
-                            <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-lg text-[10.5px] font-medium bg-white/[0.05] border border-white/[0.1] text-[#A1AEBB]">
-                              <span className="text-[#7DD3FC]">
-                                <KannadaText text={p.section_name || "General"} />
-                              </span>
-                              <span className="text-white/25">›</span>
-                              <span className="text-[#F8FAFC]">
-                                <KannadaText text={p.category_name || "General"} />
-                              </span>
-                            </span>
-                          </td>
+                            <td className="px-2.5 py-3 text-right whitespace-nowrap tabular-nums">
+                              <div className="font-mono font-bold text-[13px] text-[#F8FAFC]">
+                                {formatMoney(p.selling_price)}
+                              </div>
+                              {p.tax_rate_percent > 0 && (
+                                <div className="text-[10px] text-[#A1AEBB]/80">
+                                  GST {p.tax_rate_percent}%
+                                </div>
+                              )}
+                            </td>
 
-                          <td className="px-2.5 py-3 text-right whitespace-nowrap tabular-nums">
-                            <div className="font-mono text-[#A1AEBB]">
-                              {formatMoney(p.purchase_cost)}
-                            </div>
-                            {p.selling_price > 0 && p.purchase_cost > 0 && (
+                            <td className="px-2.5 py-3 text-right whitespace-nowrap tabular-nums">
                               <div
-                                className={`text-[10px] font-mono ${
-                                  marginPct >= 15
-                                    ? "text-[#6EE7B7]"
-                                    : marginPct >= 0
-                                    ? "text-[#7DD3FC]"
-                                    : "text-[#FB7185]"
+                                className={`font-mono font-bold text-[13px] ${
+                                  isOut
+                                    ? "text-[#FB7185]"
+                                    : isLow
+                                    ? "text-[#FBBF24]"
+                                    : "text-[#6EE7B7]"
                                 }`}
                               >
-                                {marginPct.toFixed(1)}% margin
+                                {p.current_stock} <KannadaText text={p.unit} />
                               </div>
-                            )}
-                          </td>
+                              <div className="text-[10px] text-[#A1AEBB]/75">
+                                {isKn ? "ಕನಿಷ್ಠ:" : "Min:"} {p.reorder_threshold}
+                              </div>
+                            </td>
 
-                          <td className="px-2.5 py-3 text-right whitespace-nowrap tabular-nums">
-                            <div className="font-mono font-bold text-[13px] text-[#F8FAFC]">
+                            <td className="px-2.5 py-3 text-center whitespace-nowrap">
+                              {isOut ? (
+                                <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-lg text-[10.5px] font-bold bg-[#FB7185]/12 text-[#FB7185] border border-[#FB7185]/35">
+                                  {isKn ? "ಖಾಲಿಯಾಗಿದೆ (Out)" : "Out of Stock"}
+                                </span>
+                              ) : isLow ? (
+                                <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-lg text-[10.5px] font-bold bg-[#FBBF24]/12 text-[#FBBF24] border border-[#FBBF24]/35">
+                                  {isKn ? "ಕಡಿಮೆ ದಾಸ್ತಾನು" : "Low Stock"}
+                                </span>
+                              ) : (
+                                <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-lg text-[10.5px] font-bold bg-[#6EE7B7]/12 text-[#6EE7B7] border border-[#6EE7B7]/35">
+                                  {isKn ? "ಲಭ್ಯವಿದೆ" : "In Stock"}
+                                </span>
+                              )}
+                            </td>
+
+                            <td className="px-4 sm:px-6 py-3 text-right whitespace-nowrap">
+                              <div className="inline-flex items-center justify-end gap-1">
+                                <button
+                                  type="button"
+                                  onClick={() => setSelectedProductForStickers(p)}
+                                  title="Generate & Print Barcode / Price Sticker"
+                                  aria-label={`Print barcode stickers for ${p.name}`}
+                                  className="p-1.5 rounded-lg text-[#6EE7B7]/85 hover:text-[#6EE7B7] hover:bg-[#5EEAD4]/10 transition-colors"
+                                >
+                                  <Tag className="w-3.5 h-3.5" />
+                                </button>
+                                <button
+                                  type="button"
+                                  onClick={() => openEditModal(p)}
+                                  title="Edit Product & Pricing"
+                                  aria-label={`Edit ${p.name}`}
+                                  className="p-1.5 rounded-lg text-[#A1AEBB] hover:text-[#7DD3FC] hover:bg-[#7DD3FC]/10 transition-colors"
+                                >
+                                  <Pencil className="w-3.5 h-3.5" />
+                                </button>
+                                <button
+                                  type="button"
+                                  onClick={() => {
+                                    setArchiveError(null);
+                                    setArchiveTarget({
+                                      type: "product",
+                                      id: p.id,
+                                      name: p.name,
+                                    });
+                                  }}
+                                  title="Archive Product"
+                                  aria-label={`Archive ${p.name}`}
+                                  className="p-1.5 rounded-lg text-[#A1AEBB]/70 hover:text-[#FB7185] hover:bg-[#FB7185]/10 transition-colors"
+                                >
+                                  <Archive className="w-3.5 h-3.5" />
+                                </button>
+                              </div>
+                            </td>
+                          </tr>
+                        );
+                      })}
+                    </tbody>
+                  </table>
+                </div>
+
+                {/* Mobile Product Cards (<md) */}
+                <div className="block md:hidden divide-y divide-white/[0.08]">
+                  {filteredProducts.map((p) => {
+                    const isOut = p.current_stock <= 0;
+                    const isLow = !isOut && p.current_stock <= p.reorder_threshold;
+                    const marginPct =
+                      p.selling_price > 0
+                        ? ((p.selling_price - p.purchase_cost) / p.selling_price) * 100
+                        : 0;
+
+                    return (
+                      <div key={p.id} className="p-3.5 space-y-2.5 hover:bg-white/[0.02]">
+                        <div className="flex items-start justify-between gap-2">
+                          <div className="min-w-0 flex-1">
+                            <div className="font-bold text-sm text-[#F8FAFC]">
+                              <KannadaText text={p.name} />
+                            </div>
+                            <div className="flex items-center gap-1.5 mt-0.5 text-[11px] text-[#A1AEBB] flex-wrap">
+                              <span className="text-[#7DD3FC]">{p.category_name || "General"}</span>
+                              <span>•</span>
+                              <span>{p.unit}</span>
+                              {p.sku && <span>• SKU: {p.sku}</span>}
+                            </div>
+                          </div>
+                          <span
+                            className={`px-2 py-0.5 rounded-full text-[10px] font-bold border shrink-0 ${
+                              isOut
+                                ? "bg-[#FB7185]/15 text-[#FB7185] border-[#FB7185]/35"
+                                : isLow
+                                ? "bg-[#FBBF24]/15 text-[#FBBF24] border-[#FBBF24]/35"
+                                : "bg-[#6EE7B7]/15 text-[#6EE7B7] border-[#6EE7B7]/35"
+                            }`}
+                          >
+                            {isOut ? "Out of Stock" : isLow ? "Low Stock" : "In Stock"}
+                          </span>
+                        </div>
+
+                        <div className="grid grid-cols-2 gap-2 p-2.5 rounded-xl bg-white/[0.03] border border-white/[0.06] text-xs">
+                          <div>
+                            <div className="text-[10px] text-[#A1AEBB]">Selling Price</div>
+                            <div className="font-mono font-extrabold text-[#6EE7B7] text-sm">
                               {formatMoney(p.selling_price)}
                             </div>
                             {p.tax_rate_percent > 0 && (
-                              <div className="text-[10px] text-[#A1AEBB]/80">
-                                GST {p.tax_rate_percent}%
-                              </div>
+                              <div className="text-[9.5px] text-[#A1AEBB]">GST {p.tax_rate_percent}%</div>
                             )}
-                          </td>
-
-                          <td className="px-2.5 py-3 text-right whitespace-nowrap tabular-nums">
+                          </div>
+                          <div className="text-right">
+                            <div className="text-[10px] text-[#A1AEBB]">Current Stock</div>
                             <div
-                              className={`font-mono font-bold text-[13px] ${
-                                isOut
-                                  ? "text-[#FB7185]"
-                                  : isLow
-                                  ? "text-[#FBBF24]"
-                                  : "text-[#6EE7B7]"
+                              className={`font-mono font-bold text-sm ${
+                                isOut ? "text-[#FB7185]" : isLow ? "text-[#FBBF24]" : "text-[#F8FAFC]"
                               }`}
                             >
-                              {p.current_stock} <KannadaText text={p.unit} />
+                              {p.current_stock} {p.unit}
                             </div>
-                            <div className="text-[10px] text-[#A1AEBB]/75">
-                              {isKn ? "ಕನಿಷ್ಠ:" : "Min:"} {p.reorder_threshold}
+                            <div className="text-[9.5px] text-[#A1AEBB]">
+                              Cost: {formatMoney(p.purchase_cost)} ({marginPct.toFixed(0)}% mrg)
                             </div>
-                          </td>
+                          </div>
+                        </div>
 
-                          <td className="px-2.5 py-3 text-center whitespace-nowrap">
-                            {isOut ? (
-                              <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-lg text-[10.5px] font-bold bg-[#FB7185]/12 text-[#FB7185] border border-[#FB7185]/35">
-                                {isKn ? "ಖಾಲಿಯಾಗಿದೆ (Out)" : "Out of Stock"}
-                              </span>
-                            ) : isLow ? (
-                              <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-lg text-[10.5px] font-bold bg-[#FBBF24]/12 text-[#FBBF24] border border-[#FBBF24]/35">
-                                {isKn ? "ಕಡಿಮೆ ದಾಸ್ತಾನು" : "Low Stock"}
-                              </span>
-                            ) : (
-                              <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-lg text-[10.5px] font-bold bg-[#6EE7B7]/12 text-[#6EE7B7] border border-[#6EE7B7]/35">
-                                {isKn ? "ಲಭ್ಯವಿದೆ" : "In Stock"}
-                              </span>
-                            )}
-                          </td>
-
-                          <td className="px-4 sm:px-6 py-3 text-right whitespace-nowrap">
-                            <div className="inline-flex items-center justify-end gap-1">
-                              <button
-                                type="button"
-                                onClick={() => setSelectedProductForStickers(p)}
-                                title="Generate & Print Barcode / Price Sticker"
-                                aria-label={`Print barcode stickers for ${p.name}`}
-                                className="p-1.5 rounded-lg text-[#6EE7B7]/85 hover:text-[#6EE7B7] hover:bg-[#5EEAD4]/10 transition-colors"
-                              >
-                                <Tag className="w-3.5 h-3.5" />
-                              </button>
-                              <button
-                                type="button"
-                                onClick={() => openEditModal(p)}
-                                title="Edit Product & Pricing"
-                                aria-label={`Edit ${p.name}`}
-                                className="p-1.5 rounded-lg text-[#A1AEBB] hover:text-[#7DD3FC] hover:bg-[#7DD3FC]/10 transition-colors"
-                              >
-                                <Pencil className="w-3.5 h-3.5" />
-                              </button>
-                              <button
-                                type="button"
-                                onClick={() => {
-                                  setArchiveError(null);
-                                  setArchiveTarget({
-                                    type: "product",
-                                    id: p.id,
-                                    name: p.name,
-                                  });
-                                }}
-                                title="Archive Product"
-                                aria-label={`Archive ${p.name}`}
-                                className="p-1.5 rounded-lg text-[#A1AEBB]/70 hover:text-[#FB7185] hover:bg-[#FB7185]/10 transition-colors"
-                              >
-                                <Archive className="w-3.5 h-3.5" />
-                              </button>
-                            </div>
-                          </td>
-                        </tr>
-                      );
-                    })}
-                  </tbody>
-                </table>
-              </div>
+                        <div className="flex items-center justify-between pt-1">
+                          <span className="text-[10px] font-mono text-[#A1AEBB]">
+                            {p.barcode ? `Barcode: ${p.barcode}` : "No barcode"}
+                          </span>
+                          <div className="flex items-center gap-1.5">
+                            <button
+                              type="button"
+                              onClick={() => setSelectedProductForStickers(p)}
+                              title="Print Barcode Tag"
+                              className="px-2.5 py-1.5 rounded-lg text-xs font-semibold bg-white/[0.05] border border-white/10 text-[#6EE7B7] hover:bg-[#5EEAD4]/10 flex items-center gap-1 active:scale-95"
+                            >
+                              <Tag className="w-3.5 h-3.5" />
+                              <span>Tag</span>
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => openEditModal(p)}
+                              title="Edit Product"
+                              className="px-2.5 py-1.5 rounded-lg text-xs font-semibold bg-white/[0.05] border border-white/10 text-[#7DD3FC] hover:bg-[#7DD3FC]/10 flex items-center gap-1 active:scale-95"
+                            >
+                              <Pencil className="w-3.5 h-3.5" />
+                              <span>Edit</span>
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => {
+                                setArchiveError(null);
+                                setArchiveTarget({
+                                  type: "product",
+                                  id: p.id,
+                                  name: p.name,
+                                });
+                              }}
+                              title="Archive"
+                              className="p-1.5 rounded-lg text-[#FB7185] hover:bg-[#FB7185]/10 active:scale-95"
+                            >
+                              <Archive className="w-3.5 h-3.5" />
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </>
             )
           ) : /* Categories & Aisles Ledger View */
           filteredCategories.length === 0 ? (
@@ -1197,7 +1307,9 @@ export const ProductsPage: React.FC = () => {
               </button>
             </div>
           ) : (
-            <div className="overflow-x-auto">
+            <>
+              {/* Desktop Categories Table (>=md) */}
+              <div className="hidden md:block overflow-x-auto">
               <table className="w-full text-left text-xs">
                 <thead className="bg-[#080B10]/35 border-b border-white/[0.08] text-[10.5px] text-[#A1AEBB] font-semibold uppercase tracking-[0.1em]">
                   <tr>
@@ -1286,7 +1398,86 @@ export const ProductsPage: React.FC = () => {
                 </tbody>
               </table>
             </div>
-          )}
+
+            {/* Mobile Categories Cards (<md) */}
+            <div className="block md:hidden divide-y divide-white/[0.08]">
+              {filteredCategories.map((c) => {
+                const stats = categoryStats.get(c.id);
+                const skuCount = stats?.skuCount ?? (c.product_count || 0);
+
+                return (
+                  <div key={c.id} className="p-3.5 space-y-2.5 hover:bg-white/[0.02]">
+                    <div className="flex items-start justify-between gap-2">
+                      <div className="min-w-0 flex-1">
+                        <div className="font-bold text-sm text-[#F8FAFC]">
+                          <KannadaText text={c.name} />
+                        </div>
+                        {c.description && (
+                          <p className="text-[11px] text-[#A1AEBB] mt-0.5 truncate">
+                            {c.description}
+                          </p>
+                        )}
+                      </div>
+                      <span className="inline-flex items-center px-2 py-0.5 rounded-lg text-[10px] font-semibold bg-[#7DD3FC]/15 text-[#7DD3FC] border border-[#7DD3FC]/30 shrink-0">
+                        <KannadaText text={c.section_name || "General"} />
+                      </span>
+                    </div>
+
+                    <div className="grid grid-cols-3 gap-2 p-2 rounded-xl bg-white/[0.03] border border-white/[0.06] text-center text-xs">
+                      <div>
+                        <div className="text-[10px] text-[#A1AEBB]">SKUs</div>
+                        <div className="font-mono font-bold text-sm text-[#F8FAFC]">{skuCount}</div>
+                      </div>
+                      <div>
+                        <div className="text-[10px] text-[#A1AEBB]">Units</div>
+                        <div className="font-mono font-bold text-sm text-[#6EE7B7]">{stats?.totalUnits ?? 0}</div>
+                      </div>
+                      <div>
+                        <div className="text-[10px] text-[#A1AEBB]">Valuation</div>
+                        <div className="font-mono font-bold text-xs text-[#F8FAFC]">{formatMoney(stats?.costValue ?? 0)}</div>
+                      </div>
+                    </div>
+
+                    <div className="flex items-center justify-end gap-1.5 pt-1">
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setSelectedCategory(c.id);
+                          setActiveTab("CATALOGUE");
+                        }}
+                        className="px-2.5 py-1.5 rounded-lg text-xs font-semibold bg-white/[0.05] border border-white/10 text-[#7DD3FC] hover:bg-[#7DD3FC]/10 flex items-center gap-1 active:scale-95"
+                      >
+                        <span>View SKUs</span>
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => openCategoryEditModal(c)}
+                        className="px-2.5 py-1.5 rounded-lg text-xs font-semibold bg-white/[0.05] border border-white/10 text-[#F8FAFC] hover:bg-white/10 flex items-center gap-1 active:scale-95"
+                      >
+                        <Pencil className="w-3.5 h-3.5" />
+                        <span>Edit</span>
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setArchiveError(null);
+                          setArchiveTarget({
+                            type: "category",
+                            id: c.id,
+                            name: c.name,
+                          });
+                        }}
+                        className="p-1.5 rounded-lg text-[#FB7185] hover:bg-[#FB7185]/10 active:scale-95"
+                      >
+                        <Archive className="w-3.5 h-3.5" />
+                      </button>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </>
+        )}
         </div>
       </div>
 

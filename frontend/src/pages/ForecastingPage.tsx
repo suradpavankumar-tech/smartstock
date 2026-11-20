@@ -299,7 +299,94 @@ export const ForecastingPage: React.FC<ForecastingPageProps> = ({ onNavigateTab 
         />
       ) : (
         <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl overflow-hidden shadow-sm">
-          <div className="overflow-x-auto">
+          {/* Mobile Forecasting Cards (<md) */}
+          <div className="block md:hidden divide-y divide-slate-100 dark:divide-slate-800">
+            {filteredReports.map((r) => {
+              const demandVal = selectedHorizon === 7 ? r.forecast_7d : selectedHorizon === 14 ? r.forecast_14d : r.forecast_30d;
+              const runway = r.stockout_risk_days;
+
+              let runwayColor = "text-slate-700 dark:text-slate-300";
+              let runwayBg = "bg-slate-100 dark:bg-slate-800";
+              if (runway !== undefined) {
+                if (runway <= 7) {
+                  runwayColor = "text-rose-700 dark:text-rose-400";
+                  runwayBg = "bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-900";
+                } else if (runway <= 14) {
+                  runwayColor = "text-amber-700 dark:text-amber-400";
+                  runwayBg = "bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-900";
+                } else {
+                  runwayColor = "text-emerald-700 dark:text-emerald-400";
+                  runwayBg = "bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-900";
+                }
+              }
+
+              return (
+                <div key={r.product_id} className="p-4 space-y-3">
+                  <div className="flex items-start justify-between gap-2">
+                    <div className="min-w-0">
+                      <div className="font-semibold text-slate-900 dark:text-white text-sm truncate">
+                        {r.product_name}
+                      </div>
+                      <div className="text-xs text-slate-400 mt-0.5 truncate">
+                        {r.sku ? `SKU: ${r.sku} • ` : ""}{r.category_name || "General"}
+                      </div>
+                    </div>
+                    <span className={`inline-flex items-center px-2 py-0.5 rounded text-[11px] font-mono font-bold shrink-0 ${runwayBg} ${runwayColor}`}>
+                      {runway !== undefined ? (runway >= 900 ? "90+ days" : `~${runway}d runway`) : "—"}
+                    </span>
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-2 text-xs bg-slate-50 dark:bg-slate-800/40 p-2.5 rounded-xl font-mono">
+                    <div>
+                      <span className="text-[10px] font-sans text-slate-400 uppercase tracking-wider block">
+                        Stock / Velocity
+                      </span>
+                      <span className="font-bold text-slate-900 dark:text-white">
+                        {r.current_stock} {r.unit}
+                      </span>
+                      <span className="text-[11px] text-slate-500 block">
+                        {r.daily_velocity.toFixed(2)}/day
+                      </span>
+                    </div>
+
+                    <div className="text-right">
+                      <span className="text-[10px] font-sans text-slate-400 uppercase tracking-wider block">
+                        {selectedHorizon}d Demand
+                      </span>
+                      <span className="font-bold text-sm text-brand-600 dark:text-brand-400">
+                        {demandVal !== undefined && demandVal > 0 ? `${demandVal.toFixed(1)} ${r.unit}` : "0.0"}
+                      </span>
+                      <span className="text-[10px] text-slate-400 block">
+                        {r.days_of_sales_history}d history
+                      </span>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center justify-end gap-2 pt-1">
+                    {onNavigateTab && runway !== undefined && runway <= 14 && (
+                      <button
+                        onClick={() => onNavigateTab("reorder")}
+                        className="inline-flex items-center gap-1 text-xs font-bold px-3 py-1.5 bg-amber-50 hover:bg-amber-100 dark:bg-amber-950/60 text-amber-700 dark:text-amber-300 rounded-lg transition-colors border border-amber-300 dark:border-amber-800"
+                      >
+                        <ShoppingCart className="w-3.5 h-3.5" />
+                        <span>Reorder</span>
+                      </button>
+                    )}
+                    <button
+                      onClick={() => handleOpenDetail(r.product_id, selectedHorizon)}
+                      className="inline-flex items-center gap-1 text-xs font-semibold px-3 py-1.5 bg-brand-50 hover:bg-brand-100 dark:bg-brand-950/40 text-brand-700 dark:text-brand-300 rounded-lg transition-colors border border-brand-200/60 dark:border-brand-800/60"
+                    >
+                      <span>Deep Rationale</span>
+                      <ChevronRight className="w-3.5 h-3.5" />
+                    </button>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+
+          {/* Desktop Table View (>=md) */}
+          <div className="hidden md:block overflow-x-auto">
             <table className="w-full text-left text-sm">
               <thead className="bg-slate-50 dark:bg-slate-800/60 border-b border-slate-200 dark:border-slate-800 text-[11px] text-slate-500 dark:text-slate-400 uppercase tracking-wider font-semibold">
                 <tr>
@@ -440,8 +527,8 @@ export const ForecastingPage: React.FC<ForecastingPageProps> = ({ onNavigateTab 
 
       {/* Model Detail / Deep Explainability Modal */}
       {selectedDetail && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
-          <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl max-w-2xl w-full p-6 shadow-2xl relative max-h-[90vh] overflow-y-auto">
+        <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/60 backdrop-blur-sm p-0 sm:p-4 pb-[calc(1rem+env(safe-area-inset-bottom,0px))] sm:pb-4 overflow-y-auto">
+          <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-t-[28px] sm:rounded-2xl max-w-2xl w-full p-5 sm:p-6 shadow-2xl relative max-h-[90vh] overflow-y-auto">
             <button
               onClick={() => setSelectedDetail(null)}
               className="absolute right-4 top-4 p-1 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800"

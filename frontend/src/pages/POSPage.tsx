@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from "react";
 import {
   Search, Barcode, Plus, Minus, Trash2, Printer, CheckCircle,
   CreditCard, QrCode, User, Phone, AlertCircle, MessageCircle,
-  Layers, X, Camera, Edit2, Smartphone, Sparkles
+  Layers, X, Camera, Edit2, Smartphone, Sparkles, ShoppingCart
 } from "lucide-react";
 import { api } from "../services/api";
 import { Product, Invoice, PaymentMethod, Business, CashShift } from "../types";
@@ -58,6 +58,7 @@ export const POSPage: React.FC = () => {
   const [drawerError, setDrawerError] = useState<string | null>(null);
 
   // Barcode Scanner & Real Owner UPI Modal State
+  const [mobilePosTab, setMobilePosTab] = useState<"catalog" | "cart">("catalog");
   const [showCameraScanner, setShowCameraScanner] = useState(false);
   const [scannedToast, setScannedToast] = useState<string | null>(null);
   const [showOwnerUpiModal, setShowOwnerUpiModal] = useState(false);
@@ -505,10 +506,41 @@ export const POSPage: React.FC = () => {
           </div>
         </div>
 
+        {/* Mobile View Switcher Tabs (<lg) */}
+        <div className="lg:hidden flex items-center p-1.5 mx-3 sm:mx-6 my-2 bg-[#080B10]/80 rounded-2xl border border-white/10 shrink-0">
+          <button
+            type="button"
+            onClick={() => setMobilePosTab("catalog")}
+            className={`flex-1 py-2 px-3 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-2 ${
+              mobilePosTab === "catalog"
+                ? "bg-[#5EEAD4]/20 text-[#6EE7B7] border border-[#5EEAD4]/40 shadow-[0_0_12px_rgba(94,234,212,0.2)]"
+                : "text-[#A1AEBB] hover:text-[#F8FAFC]"
+            }`}
+          >
+            <Search className="w-3.5 h-3.5" />
+            <span>Catalogue ({catalogProducts.length})</span>
+          </button>
+          <button
+            type="button"
+            onClick={() => setMobilePosTab("cart")}
+            className={`flex-1 py-2 px-3 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-2 relative ${
+              mobilePosTab === "cart"
+                ? "bg-[#5EEAD4]/20 text-[#6EE7B7] border border-[#5EEAD4]/40 shadow-[0_0_12px_rgba(94,234,212,0.2)]"
+                : "text-[#A1AEBB] hover:text-[#F8FAFC]"
+            }`}
+          >
+            <ShoppingCart className="w-3.5 h-3.5" />
+            <span>Cart ({cart.length}) • ₹{grandTotal.toFixed(0)}</span>
+            {cart.length > 0 && (
+              <span className="w-2 h-2 rounded-full bg-[#6EE7B7] shadow-[0_0_6px_#5EEAD4] animate-pulse" />
+            )}
+          </button>
+        </div>
+
         {/* Main Cardless Split Terminal: Balanced 6/6 Architectural Columns */}
         <div className="relative z-10 grid grid-cols-1 lg:grid-cols-12 flex-1 min-h-0 divide-y lg:divide-y-0 lg:divide-x divide-white/[0.08]">
           {/* LEFT PANE: Scan & Store Catalogue Matrix */}
-          <div className="lg:col-span-6 flex flex-col min-h-0">
+          <div className={`lg:col-span-6 flex flex-col min-h-0 ${mobilePosTab === "catalog" ? "flex" : "hidden lg:flex"}`}>
             {/* Search & Camera Bar */}
             <div className="px-5 pt-3.5 pb-2.5 border-b border-white/[0.08] space-y-2.5 shrink-0">
               <div className="relative flex gap-2">
@@ -703,14 +735,41 @@ export const POSPage: React.FC = () => {
                   })}
                 </div>
               )}
+
+              {/* Floating Bottom Cart Review Pill for Mobile */}
+              {cart.length > 0 && (
+                <div
+                  className="lg:hidden sticky bottom-2 mx-2 my-2 p-3 rounded-2xl bg-gradient-to-r from-[#5EEAD4] to-[#6EE7B7] text-[#080B10] shadow-[0_8px_25px_rgba(94,234,212,0.45)] flex items-center justify-between z-20 font-bold active:scale-[0.98] transition-transform cursor-pointer"
+                  onClick={() => setMobilePosTab("cart")}
+                >
+                  <div className="flex items-center gap-2">
+                    <span className="w-6 h-6 rounded-full bg-[#080B10] text-[#6EE7B7] flex items-center justify-center text-xs font-black">
+                      {cart.length}
+                    </span>
+                    <span className="text-xs">
+                      Total: ₹{grandTotal.toFixed(2)}
+                    </span>
+                  </div>
+                  <span className="text-xs flex items-center gap-1 font-extrabold">
+                    Review &amp; Pay →
+                  </span>
+                </div>
+              )}
             </div>
           </div>
 
           {/* RIGHT PANE: Executive Order Cart & Settlement */}
-          <div className="lg:col-span-6 flex flex-col min-h-0 bg-[#080B10]/25">
+          <div className={`lg:col-span-6 flex flex-col min-h-0 bg-[#080B10]/25 ${mobilePosTab === "cart" ? "flex" : "hidden lg:flex"}`}>
             {/* Cart Header + Integrated Roll Width Control */}
             <div className="px-5 py-2.5 border-b border-white/[0.08] flex items-center justify-between gap-2 shrink-0">
-              <div className="flex items-center gap-2.5 min-w-0">
+              <div className="flex items-center gap-2 min-w-0">
+                <button
+                  type="button"
+                  onClick={() => setMobilePosTab("catalog")}
+                  className="lg:hidden text-xs text-[#5EEAD4] font-bold hover:underline flex items-center gap-1 shrink-0 mr-1"
+                >
+                  ← Catalogue
+                </button>
                 <span className="text-[11px] font-semibold uppercase tracking-[0.12em] text-[#A1AEBB] shrink-0">
                   {t("cart")}
                 </span>
@@ -1260,8 +1319,8 @@ export const POSPage: React.FC = () => {
 
       {/* Completed Invoice / Print Modal */}
       {completedInvoice && (
-        <div className="fixed inset-0 z-50 bg-[#080B10]/80 backdrop-blur-md flex items-center justify-center p-4 overflow-y-auto">
-          <div className="liquid-modal max-w-md w-full p-6 text-[#F8FAFC] space-y-4">
+        <div className="fixed inset-0 z-50 bg-[#080B10]/80 backdrop-blur-md flex items-end sm:items-center justify-center p-0 sm:p-4 overflow-y-auto pb-[calc(1rem+env(safe-area-inset-bottom,0px))]">
+          <div className="liquid-modal max-w-md w-full p-5 sm:p-6 text-[#F8FAFC] space-y-4 rounded-t-[28px] sm:rounded-2xl max-h-[90vh] overflow-y-auto">
             <div className="flex items-center justify-between pb-3 border-b border-white/[0.08]">
               <div className="flex items-center gap-2 text-[#6EE7B7]">
                 <CheckCircle className="w-5 h-5" />

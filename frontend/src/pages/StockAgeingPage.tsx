@@ -492,8 +492,68 @@ export const StockAgeingPage: React.FC = () => {
                 </p>
               </div>
             ) : (
-              <div className="overflow-x-auto">
-                <table className="w-full text-left text-xs divide-y divide-slate-200 dark:divide-slate-800">
+              <>
+                {/* Mobile Stagnant Product Cards (<md) */}
+                <div className="block md:hidden divide-y divide-slate-100 dark:divide-slate-800">
+                  {displayedProducts.map((p) => {
+                    const isDead = p.status === "DEAD" || p.status === "DEAD_STOCK";
+                    const isDormant = p.status === "DORMANT";
+                    return (
+                      <div key={p.product_id} className="p-4 space-y-3">
+                        <div className="flex items-start justify-between gap-2">
+                          <div className="min-w-0">
+                            <div className="font-bold text-slate-900 dark:text-white text-sm truncate">
+                              {p.product_name}
+                            </div>
+                            <span className="text-xs text-slate-400">
+                              {p.days_since_last_sale} days inactive
+                            </span>
+                          </div>
+                          <span
+                            className={`inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold shrink-0 ${
+                              isDead
+                                ? "bg-rose-100 text-rose-800 dark:bg-rose-950/60 dark:text-rose-300 border border-rose-300 dark:border-rose-800"
+                                : isDormant
+                                ? "bg-amber-100 text-amber-800 dark:bg-amber-950/60 dark:text-amber-300 border border-amber-300 dark:border-amber-800"
+                                : "bg-blue-100 text-blue-800 dark:bg-blue-950/60 dark:text-blue-300 border border-blue-300 dark:border-blue-800"
+                            }`}
+                          >
+                            {p.status}
+                          </span>
+                        </div>
+
+                        <div className="grid grid-cols-3 gap-2 text-center p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800/40 text-xs font-mono">
+                          <div>
+                            <span className="text-[10px] text-slate-400 block font-sans">Stock</span>
+                            <span className="font-bold text-slate-900 dark:text-white">{p.current_stock}</span>
+                          </div>
+                          <div>
+                            <span className="text-[10px] text-slate-400 block font-sans">Cost</span>
+                            <span className="text-slate-600 dark:text-slate-300">₹{p.unit_cost.toFixed(1)}</span>
+                          </div>
+                          <div>
+                            <span className="text-[10px] text-slate-400 block font-sans">Locked</span>
+                            <span className="font-black text-rose-600 dark:text-rose-400">₹{p.inventory_value.toFixed(0)}</span>
+                          </div>
+                        </div>
+
+                        <div className="flex justify-end pt-1">
+                          <button
+                            onClick={() => handleOpenLiquidation(p)}
+                            className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-amber-50 hover:bg-amber-100 dark:bg-amber-950/60 text-amber-800 dark:text-amber-200 rounded-lg text-xs font-bold transition-all border border-amber-200 dark:border-amber-800"
+                          >
+                            <span>Liquidation Plan</span>
+                            <ChevronRight className="w-3.5 h-3.5" />
+                          </button>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+
+                {/* Desktop Table View (>=md) */}
+                <div className="hidden md:block overflow-x-auto">
+                  <table className="w-full text-left text-xs divide-y divide-slate-200 dark:divide-slate-800">
                   <thead className="bg-slate-50 dark:bg-slate-800/60 text-slate-500 font-semibold uppercase tracking-wider">
                     <tr>
                       <th className="py-3 px-4">Product Name</th>
@@ -553,6 +613,7 @@ export const StockAgeingPage: React.FC = () => {
                   </tbody>
                 </table>
               </div>
+              </>
             )}
           </div>
         </>
@@ -560,8 +621,8 @@ export const StockAgeingPage: React.FC = () => {
 
       {/* Liquidation & Vendor Return Modal */}
       {selectedProduct && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
-          <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl max-w-lg w-full p-6 shadow-2xl relative space-y-4 max-h-[90vh] overflow-y-auto">
+        <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/60 backdrop-blur-sm p-0 sm:p-4 pb-[calc(1rem+env(safe-area-inset-bottom,0px))] sm:pb-4 overflow-y-auto">
+          <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-t-[28px] sm:rounded-2xl max-w-lg w-full p-5 sm:p-6 shadow-2xl relative space-y-4 max-h-[90vh] overflow-y-auto">
             {/* Modal Header */}
             <div className="flex items-start justify-between">
               <div>

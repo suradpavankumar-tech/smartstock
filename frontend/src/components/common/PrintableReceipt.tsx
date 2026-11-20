@@ -146,8 +146,9 @@ export const PrintableReceipt: React.FC<PrintableReceiptProps> = ({
 
   if (onClose) {
     return createPortal(
-      <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#080B10]/85 backdrop-blur-md p-4 overflow-y-auto">
-        <div className="liquid-modal p-5 max-w-sm w-full relative text-[#F8FAFC]">
+      <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-[#080B10]/85 backdrop-blur-md p-0 sm:p-4 pb-[calc(1rem+env(safe-area-inset-bottom,0px))] sm:pb-4 overflow-y-auto">
+        <div className="liquid-modal p-5 max-w-sm w-full relative text-[#F8FAFC] rounded-t-[28px] sm:rounded-2xl">
+          <div className="w-12 h-1 bg-white/20 rounded-full mx-auto mb-3 block sm:hidden" />
           <div className="flex items-center justify-between pb-3 mb-3 border-b border-white/[0.08]">
             <span className="text-xs font-mono font-bold uppercase tracking-wider text-[#6EE7B7]">
               Thermal Receipt Preview

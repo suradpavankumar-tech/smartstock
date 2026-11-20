@@ -724,8 +724,152 @@ export const SuppliersPage: React.FC<SuppliersPageProps> = ({ onNavigate }) => {
               </div>
             </div>
           ) : (
-            <div className="overflow-x-auto">
-              <table className="w-full text-left text-xs">
+            <>
+              {/* Mobile Supplier Card List View (<md) */}
+              <div className="block md:hidden divide-y divide-white/[0.08]">
+                {filtered.map((s) => {
+                  const vStats = vendorStatsMap.get(s.id);
+                  const poCount = vStats ? vStats.poCount : s.order_count || 0;
+                  const totalVendorSpend = vStats ? vStats.totalSpend : 0;
+                  const openVendorPOs = vStats ? vStats.openCount : 0;
+                  const leadCfg = getLeadBadge(Number(s.lead_time_days) || 3);
+                  const initial = (s.name || "S").trim().charAt(0).toUpperCase();
+
+                  return (
+                    <div key={s.id} className="p-4 space-y-3">
+                      <div className="flex items-start justify-between gap-3">
+                        <div className="flex items-center gap-2.5 min-w-0">
+                          <div className="w-9 h-9 rounded-full bg-[#080B10] border border-[#5EEAD4]/35 text-[#6EE7B7] font-mono font-bold text-xs flex items-center justify-center shrink-0">
+                            {initial}
+                          </div>
+                          <div className="min-w-0">
+                            <div className="flex items-center gap-1.5 flex-wrap">
+                              <span className="font-semibold text-[#F8FAFC] text-sm truncate">
+                                <KannadaText text={s.name} />
+                              </span>
+                              {openVendorPOs > 0 && (
+                                <span className="px-1.5 py-0.5 rounded bg-[#FBBF24]/15 text-[#FBBF24] border border-[#FBBF24]/30 text-[9.5px] font-bold tabular-nums">
+                                  {openVendorPOs} open
+                                </span>
+                              )}
+                            </div>
+                            {s.contact_person && (
+                              <p className="text-[11px] text-[#A1AEBB] truncate mt-0.5">
+                                Attn: <KannadaText text={s.contact_person} />
+                              </p>
+                            )}
+                          </div>
+                        </div>
+
+                        <div className="text-right shrink-0">
+                          <span
+                            className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-lg text-[10px] font-bold border tabular-nums ${leadCfg.cls}`}
+                          >
+                            <span className={`w-1.5 h-1.5 rounded-full ${leadCfg.dot}`} />
+                            {leadCfg.label}
+                          </span>
+                          <div className="text-[10px] font-mono text-[#A1AEBB] mt-0.5">
+                            Net {s.payment_terms_days ?? 0}d
+                          </div>
+                        </div>
+                      </div>
+
+                      {s.address && (
+                        <p className="text-[11px] text-[#A1AEBB] flex items-center gap-1 truncate">
+                          <MapPin className="w-3 h-3 text-[#A1AEBB]/70 shrink-0" />
+                          <span className="truncate">{s.address}</span>
+                        </p>
+                      )}
+
+                      <div className="flex flex-wrap items-center justify-between gap-2 text-xs pt-1 border-t border-white/[0.04]">
+                        <div className="flex items-center gap-3">
+                          {s.phone ? (
+                            <a
+                              href={`tel:${s.phone}`}
+                              className="font-mono text-xs text-[#6EE7B7] hover:underline flex items-center gap-1"
+                            >
+                              <Phone className="w-3 h-3 text-[#6EE7B7]" />
+                              <span>{s.phone}</span>
+                            </a>
+                          ) : (
+                            <span className="text-[11px] text-[#A1AEBB]/50 italic">No phone</span>
+                          )}
+                          {s.gstin && (
+                            <span className="font-mono text-[10.5px] text-[#7DD3FC]">
+                              {s.gstin}
+                            </span>
+                          )}
+                        </div>
+
+                        <div className="text-right tabular-nums text-xs font-mono">
+                          <span className="text-[#A1AEBB] text-[10.5px] mr-1.5">Spend:</span>
+                          <span className="font-bold text-[#F8FAFC]">
+                            {poCount > 0 ? formatMoney(totalVendorSpend) : "₹0"}
+                          </span>
+                        </div>
+                      </div>
+
+                      <div className="flex items-center justify-end gap-1.5 pt-1">
+                        {s.phone && (
+                          <>
+                            <button
+                              type="button"
+                              onClick={() => openWhatsApp(s.phone!, s.name)}
+                              title="Chat on WhatsApp"
+                              aria-label={`WhatsApp ${s.name}`}
+                              className="p-2 rounded-lg text-[#6EE7B7] hover:bg-[#6EE7B7]/12 border border-white/[0.08] transition-colors"
+                            >
+                              <MessageCircle className="w-3.5 h-3.5" />
+                            </button>
+                            <a
+                              href={`tel:${s.phone}`}
+                              title={`Call ${s.phone}`}
+                              aria-label={`Call ${s.name}`}
+                              className="p-2 rounded-lg text-[#7DD3FC] hover:bg-[#7DD3FC]/12 border border-white/[0.08] transition-colors"
+                            >
+                              <PhoneCall className="w-3.5 h-3.5" />
+                            </a>
+                          </>
+                        )}
+
+                        <button
+                          type="button"
+                          onClick={() => handleOpenEditModal(s)}
+                          className="px-2.5 py-1.5 rounded-lg text-xs font-medium text-[#A1AEBB] hover:text-[#F8FAFC] border border-white/[0.08] transition-colors"
+                          aria-label={`Edit ${s.name}`}
+                        >
+                          <Edit2 className="w-3.5 h-3.5 inline mr-1" />
+                          <span>Edit</span>
+                        </button>
+
+                        <button
+                          type="button"
+                          onClick={() => openDeleteConfirm(s)}
+                          className="p-2 rounded-lg text-[#FB7185]/80 hover:text-[#FB7185] hover:bg-[#FB7185]/12 border border-white/[0.08] transition-colors"
+                          aria-label={`Delete ${s.name}`}
+                        >
+                          <Trash2 className="w-3.5 h-3.5" />
+                        </button>
+
+                        {onNavigate && (
+                          <button
+                            type="button"
+                            onClick={() => handleRaisePOForSupplier(s)}
+                            className="liquid-btn-primary inline-flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs font-bold ml-1"
+                          >
+                            <ShoppingCart className="w-3.5 h-3.5" />
+                            <span>Raise PO</span>
+                          </button>
+                        )}
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+
+              {/* Desktop Table View (>=md) */}
+              <div className="hidden md:block overflow-x-auto">
+                <table className="w-full text-left text-xs">
                 <thead className="bg-[#080B10]/35 border-b border-white/[0.08] text-[10.5px] text-[#A1AEBB] font-semibold uppercase tracking-[0.1em]">
                   <tr>
                     <th className="px-4 sm:px-6 py-3">Supplier / Firm</th>
@@ -900,6 +1044,7 @@ export const SuppliersPage: React.FC<SuppliersPageProps> = ({ onNavigate }) => {
                 </tbody>
               </table>
             </div>
+            </>
           )}
         </div>
       </div>
@@ -907,8 +1052,8 @@ export const SuppliersPage: React.FC<SuppliersPageProps> = ({ onNavigate }) => {
       {/* Add / Edit Supplier Modal (Portalled) */}
       {showFormModal &&
         createPortal(
-          <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#080B10]/80 backdrop-blur-md p-4 overflow-y-auto">
-            <div className="liquid-modal max-w-lg w-full p-6 text-[#F8FAFC] space-y-4 max-h-[92vh] overflow-y-auto">
+          <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-[#080B10]/80 backdrop-blur-md p-0 sm:p-4 pb-[calc(1rem+env(safe-area-inset-bottom,0px))] sm:pb-4 overflow-y-auto">
+            <div className="liquid-modal max-w-lg w-full p-5 sm:p-6 text-[#F8FAFC] space-y-4 rounded-t-[28px] sm:rounded-2xl max-h-[90vh] overflow-y-auto">
               <div className="flex items-start justify-between pb-3 border-b border-white/[0.08]">
                 <div className="flex items-center gap-3">
                   <div className="w-8 h-8 rounded-full bg-[#080B10] border border-[#5EEAD4]/40 text-[#6EE7B7] flex items-center justify-center shrink-0">
@@ -1084,8 +1229,8 @@ export const SuppliersPage: React.FC<SuppliersPageProps> = ({ onNavigate }) => {
       {/* Delete Supplier Confirmation Modal (Portalled) */}
       {deleteTarget &&
         createPortal(
-          <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#080B10]/80 backdrop-blur-md p-4">
-            <div className="liquid-modal max-w-md w-full p-6 text-[#F8FAFC] space-y-4">
+          <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-[#080B10]/80 backdrop-blur-md p-0 sm:p-4 pb-[calc(1rem+env(safe-area-inset-bottom,0px))] sm:pb-4 overflow-y-auto">
+            <div className="liquid-modal max-w-md w-full p-5 sm:p-6 text-[#F8FAFC] space-y-4 rounded-t-[28px] sm:rounded-2xl max-h-[90vh] overflow-y-auto">
               <div className="flex items-start justify-between pb-3 border-b border-white/[0.08]">
                 <div className="flex items-center gap-3">
                   <div className="w-8 h-8 rounded-full bg-[#FB7185]/15 border border-[#FB7185]/40 text-[#FB7185] flex items-center justify-center shrink-0">

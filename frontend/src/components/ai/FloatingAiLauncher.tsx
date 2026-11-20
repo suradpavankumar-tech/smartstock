@@ -181,9 +181,9 @@ export const FloatingAiLauncher: React.FC<FloatingAiLauncherProps> = ({
   };
 
   return (
-    <div className="fixed bottom-5 right-5 z-40 flex flex-col items-end">
+    <div className="fixed bottom-[calc(4.5rem+env(safe-area-inset-bottom,0px))] right-3 sm:right-5 lg:bottom-5 lg:right-5 z-40 flex flex-col items-end">
       {open && (
-        <div className="mb-3 w-[min(395px,calc(100vw-2rem))] h-[min(520px,calc(100vh-7rem))] liquid-modal rounded-[24px] flex flex-col overflow-hidden shadow-[0_24px_70px_rgba(0,0,0,0.85),0_0_28px_rgba(94,234,212,0.14)] border border-white/[0.16]">
+        <div className="mb-3 w-[min(395px,calc(100vw-1.5rem))] h-[min(520px,calc(100vh-8.5rem))] liquid-modal rounded-[24px] flex flex-col overflow-hidden shadow-[0_24px_70px_rgba(0,0,0,0.85),0_0_28px_rgba(94,234,212,0.14)] border border-white/[0.16]">
           {/* Clean Header */}
           <div className="px-4 py-3 border-b border-white/[0.08] bg-white/[0.02] flex items-center justify-between gap-2">
             <div className="flex items-center gap-2.5 min-w-0">

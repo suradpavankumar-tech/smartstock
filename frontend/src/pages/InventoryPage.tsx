@@ -160,7 +160,8 @@ export const InventoryPage: React.FC = () => {
           </div>
         ) : (
           <div className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm overflow-hidden">
-            <div className="overflow-x-auto">
+            {/* Desktop Ledger Table (>=md) */}
+            <div className="hidden md:block overflow-x-auto">
               <table className="w-full text-left text-xs divide-y divide-slate-200 dark:divide-slate-800">
                 <thead className="bg-slate-50 dark:bg-slate-800/60 text-slate-500 font-semibold">
                   <tr>
@@ -224,6 +225,62 @@ export const InventoryPage: React.FC = () => {
                 </tbody>
               </table>
             </div>
+
+            {/* Mobile Ledger Cards (<md) */}
+            <div className="block md:hidden divide-y divide-white/[0.08]">
+              {movements.map((m) => {
+                const isPositive = m.quantity > 0;
+                return (
+                  <div key={m.id} className="p-3.5 space-y-2 hover:bg-white/[0.02]">
+                    <div className="flex items-start justify-between gap-2">
+                      <div className="font-bold text-sm text-[#F8FAFC]">
+                        <KannadaText text={m.product_name} />
+                      </div>
+                      <span
+                        className={`px-2 py-0.5 rounded text-[10px] font-bold shrink-0 ${
+                          m.movement_type === "SALE"
+                            ? "bg-blue-500/15 text-blue-300 border border-blue-500/30"
+                            : m.movement_type === "PURCHASE_RECEIVE"
+                            ? "bg-emerald-500/15 text-emerald-300 border border-emerald-500/30"
+                            : m.movement_type === "AUDIT_CORRECTION"
+                            ? "bg-amber-500/15 text-amber-300 border border-amber-500/30"
+                            : "bg-slate-500/15 text-slate-300 border border-slate-500/30"
+                        }`}
+                      >
+                        {tData(m.movement_type)}
+                      </span>
+                    </div>
+
+                    <div className="flex items-center justify-between text-xs">
+                      <div>
+                        <span className="text-[10px] text-[#A1AEBB]">Quantity: </span>
+                        <span className={`font-mono font-bold ${isPositive ? "text-[#6EE7B7]" : "text-[#FB7185]"}`}>
+                          {isPositive ? `+${m.quantity}` : m.quantity}
+                        </span>
+                      </div>
+                      <div>
+                        <span className="text-[10px] text-[#A1AEBB]">Bal After: </span>
+                        <span className="font-mono font-bold text-[#F8FAFC]">{m.balance_after}</span>
+                      </div>
+                      <div>
+                        <span className="text-[10px] text-[#A1AEBB]">Cost: </span>
+                        <span className="font-mono text-[#A1AEBB]">₹{m.unit_cost.toFixed(2)}</span>
+                      </div>
+                    </div>
+
+                    <div className="flex items-center justify-between text-[10.5px] text-[#A1AEBB] pt-1 border-t border-white/[0.04]">
+                      <span className="truncate max-w-[200px]">
+                        <KannadaText text={m.reason || "Standard movement"} />
+                        {m.reference_id && <span className="font-mono text-[9.5px] ml-1">({m.reference_id})</span>}
+                      </span>
+                      <span className="font-mono text-[10px] shrink-0">
+                        {new Date(m.created_at).toLocaleDateString("en-IN")}
+                      </span>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
           </div>
         )
       ) : activeTab === "batches" ? (
@@ -234,54 +291,111 @@ export const InventoryPage: React.FC = () => {
           </div>
         ) : (
           <div className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm overflow-hidden">
-            <table className="w-full text-left text-xs divide-y divide-slate-200 dark:divide-slate-800">
-              <thead className="bg-slate-50 dark:bg-slate-800/60 text-slate-500 font-semibold">
-                <tr>
-                  <th className="px-4 py-3">Batch Number</th>
-                  <th className="px-4 py-3">Quantity</th>
-                  <th className="px-4 py-3">Purchase Cost</th>
-                  <th className="px-4 py-3">Received Date</th>
-                  <th className="px-4 py-3">Expiry Date</th>
-                  <th className="px-4 py-3 text-center">Status</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
-                {batches.map((b) => {
-                  const daysToExpiry = b.expiry_date
-                    ? Math.ceil((new Date(b.expiry_date).getTime() - new Date().getTime()) / (1000 * 3600 * 24))
-                    : null;
-                  const isExpired = daysToExpiry !== null && daysToExpiry <= 0;
-                  const isExpiringSoon = daysToExpiry !== null && daysToExpiry > 0 && daysToExpiry <= 30;
+            {/* Desktop Batches Table (>=md) */}
+            <div className="hidden md:block overflow-x-auto">
+              <table className="w-full text-left text-xs divide-y divide-slate-200 dark:divide-slate-800">
+                <thead className="bg-slate-50 dark:bg-slate-800/60 text-slate-500 font-semibold">
+                  <tr>
+                    <th className="px-4 py-3">Batch Number</th>
+                    <th className="px-4 py-3">Quantity</th>
+                    <th className="px-4 py-3">Purchase Cost</th>
+                    <th className="px-4 py-3">Received Date</th>
+                    <th className="px-4 py-3">Expiry Date</th>
+                    <th className="px-4 py-3 text-center">Status</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
+                  {batches.map((b) => {
+                    const daysToExpiry = b.expiry_date
+                      ? Math.ceil((new Date(b.expiry_date).getTime() - new Date().getTime()) / (1000 * 3600 * 24))
+                      : null;
+                    const isExpired = daysToExpiry !== null && daysToExpiry <= 0;
+                    const isExpiringSoon = daysToExpiry !== null && daysToExpiry > 0 && daysToExpiry <= 30;
 
-                  return (
-                    <tr key={b.id} className="hover:bg-slate-50 dark:hover:bg-slate-800/40">
-                      <td className="px-4 py-3 font-mono font-bold">{b.batch_number}</td>
-                      <td className="px-4 py-3 font-bold">{b.quantity}</td>
-                      <td className="px-4 py-3">₹{b.purchase_cost.toFixed(2)}</td>
-                      <td className="px-4 py-3 text-slate-500">{b.received_date}</td>
-                      <td className="px-4 py-3 font-medium">
-                        {b.expiry_date ? (
-                          <span className={isExpired ? "text-rose-600 font-bold" : isExpiringSoon ? "text-amber-600 font-bold" : ""}>
-                            {b.expiry_date} ({daysToExpiry} days)
-                          </span>
-                        ) : (
-                          <span className="text-slate-400">No Expiry Date</span>
-                        )}
-                      </td>
-                      <td className="px-4 py-3 text-center">
-                        {isExpired ? (
-                          <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-rose-100 text-rose-800">Expired</span>
-                        ) : isExpiringSoon ? (
-                          <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-amber-100 text-amber-800">Expiring Soon</span>
-                        ) : (
-                          <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-100 text-emerald-800">Valid</span>
-                        )}
-                      </td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
+                    return (
+                      <tr key={b.id} className="hover:bg-slate-50 dark:hover:bg-slate-800/40">
+                        <td className="px-4 py-3 font-mono font-bold">{b.batch_number}</td>
+                        <td className="px-4 py-3 font-bold">{b.quantity}</td>
+                        <td className="px-4 py-3">₹{b.purchase_cost.toFixed(2)}</td>
+                        <td className="px-4 py-3 text-slate-500">{b.received_date}</td>
+                        <td className="px-4 py-3 font-medium">
+                          {b.expiry_date ? (
+                            <span className={isExpired ? "text-rose-600 font-bold" : isExpiringSoon ? "text-amber-600 font-bold" : ""}>
+                              {b.expiry_date} ({daysToExpiry} days)
+                            </span>
+                          ) : (
+                            <span className="text-slate-400">No Expiry Date</span>
+                          )}
+                        </td>
+                        <td className="px-4 py-3 text-center">
+                          {isExpired ? (
+                            <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-rose-100 text-rose-800">Expired</span>
+                          ) : isExpiringSoon ? (
+                            <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-amber-100 text-amber-800">Expiring Soon</span>
+                          ) : (
+                            <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-100 text-emerald-800">Valid</span>
+                          )}
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
+
+            {/* Mobile Batches Cards (<md) */}
+            <div className="block md:hidden divide-y divide-white/[0.08]">
+              {batches.map((b) => {
+                const daysToExpiry = b.expiry_date
+                  ? Math.ceil((new Date(b.expiry_date).getTime() - new Date().getTime()) / (1000 * 3600 * 24))
+                  : null;
+                const isExpired = daysToExpiry !== null && daysToExpiry <= 0;
+                const isExpiringSoon = daysToExpiry !== null && daysToExpiry > 0 && daysToExpiry <= 30;
+
+                return (
+                  <div key={b.id} className="p-3.5 space-y-2 hover:bg-white/[0.02]">
+                    <div className="flex items-center justify-between">
+                      <span className="font-mono font-bold text-sm text-[#F8FAFC]">
+                        Batch #{b.batch_number}
+                      </span>
+                      <span
+                        className={`px-2 py-0.5 rounded text-[10px] font-bold ${
+                          isExpired
+                            ? "bg-rose-500/15 text-rose-300 border border-rose-500/30"
+                            : isExpiringSoon
+                            ? "bg-amber-500/15 text-amber-300 border border-amber-500/30"
+                            : "bg-emerald-500/15 text-emerald-300 border border-emerald-500/30"
+                        }`}
+                      >
+                        {isExpired ? "Expired" : isExpiringSoon ? "Expiring Soon" : "Valid"}
+                      </span>
+                    </div>
+
+                    <div className="grid grid-cols-3 gap-2 p-2 rounded-xl bg-white/[0.03] border border-white/[0.06] text-center text-xs">
+                      <div>
+                        <div className="text-[10px] text-[#A1AEBB]">Quantity</div>
+                        <div className="font-mono font-bold text-sm text-[#F8FAFC]">{b.quantity}</div>
+                      </div>
+                      <div>
+                        <div className="text-[10px] text-[#A1AEBB]">Cost</div>
+                        <div className="font-mono font-bold text-xs text-[#6EE7B7]">₹{b.purchase_cost.toFixed(2)}</div>
+                      </div>
+                      <div>
+                        <div className="text-[10px] text-[#A1AEBB]">Received</div>
+                        <div className="font-mono text-[10.5px] text-[#A1AEBB]">{b.received_date || "—"}</div>
+                      </div>
+                    </div>
+
+                    <div className="text-[11px] text-[#A1AEBB] flex items-center justify-between pt-1">
+                      <span>Expiry:</span>
+                      <span className={`font-semibold ${isExpired ? "text-[#FB7185]" : isExpiringSoon ? "text-[#FBBF24]" : "text-[#F8FAFC]"}`}>
+                        {b.expiry_date ? `${b.expiry_date} (${daysToExpiry}d)` : "No Expiry Date"}
+                      </span>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
           </div>
         )
       ) : (
@@ -304,7 +418,8 @@ export const InventoryPage: React.FC = () => {
             </div>
 
             <div className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm overflow-hidden">
-              <div className="overflow-x-auto">
+              {/* Desktop Table (>=md) */}
+              <div className="hidden md:block overflow-x-auto">
                 <table className="w-full text-left text-xs divide-y divide-slate-200 dark:divide-slate-800">
                   <thead className="bg-slate-50 dark:bg-slate-800/60 text-slate-500 font-semibold">
                     <tr>
@@ -397,6 +512,88 @@ export const InventoryPage: React.FC = () => {
                   </tbody>
                 </table>
               </div>
+
+              {/* Mobile Near-Expiry Cards (<md) */}
+              <div className="block md:hidden divide-y divide-white/[0.08]">
+                {expiringBatches.map((b) => {
+                  const days = b.days_until_expiry !== undefined ? b.days_until_expiry : 0;
+                  const isExpired = days < 0;
+                  const isCritical = days >= 0 && days <= 15;
+                  const matchedProd = products.find((p) => p.id === b.product_id);
+
+                  return (
+                    <div key={b.id} className="p-3.5 space-y-2.5 hover:bg-white/[0.02]">
+                      <div className="flex items-start justify-between gap-2">
+                        <div className="min-w-0 flex-1">
+                          <div className="font-bold text-sm text-[#F8FAFC]">
+                            <KannadaText text={b.product_name || matchedProd?.name || "Product"} />
+                          </div>
+                          <div className="text-[10px] text-[#A1AEBB] mt-0.5 font-mono">
+                            Batch #{b.batch_number} • Recd: {b.received_date || "—"}
+                          </div>
+                        </div>
+                        <span
+                          className={`px-2 py-0.5 rounded text-[10px] font-bold shrink-0 ${
+                            isExpired
+                              ? "bg-rose-500/15 text-rose-300 border border-rose-500/30"
+                              : isCritical
+                              ? "bg-amber-500/15 text-amber-300 border border-amber-500/30"
+                              : "bg-blue-500/15 text-blue-300 border border-blue-500/30"
+                          }`}
+                        >
+                          {isExpired ? "EXPIRED" : isCritical ? "< 15 Days" : "Within 60d"}
+                        </span>
+                      </div>
+
+                      <div className="grid grid-cols-3 gap-2 p-2 rounded-xl bg-white/[0.03] border border-white/[0.06] text-center text-xs">
+                        <div>
+                          <div className="text-[10px] text-[#A1AEBB]">Stock Qty</div>
+                          <div className="font-mono font-bold text-sm text-[#F8FAFC]">{b.quantity}</div>
+                        </div>
+                        <div>
+                          <div className="text-[10px] text-[#A1AEBB]">At-Risk Value</div>
+                          <div className="font-mono font-bold text-xs text-[#FB7185]">₹{(b.quantity * b.purchase_cost).toFixed(2)}</div>
+                        </div>
+                        <div>
+                          <div className="text-[10px] text-[#A1AEBB]">Expiry</div>
+                          <div className="font-mono text-[10.5px] font-bold text-[#F8FAFC]">
+                            {isExpired ? `${Math.abs(days)}d ago` : `${days}d left`}
+                          </div>
+                        </div>
+                      </div>
+
+                      <div className="flex items-center justify-end gap-1.5 pt-1">
+                        {matchedProd && (
+                          <button
+                            type="button"
+                            onClick={() => setStickerProduct(matchedProd)}
+                            className="px-2.5 py-1.5 rounded-lg text-xs font-semibold bg-amber-500/15 border border-amber-500/30 text-amber-300 flex items-center gap-1 active:scale-95"
+                          >
+                            <Tag className="w-3.5 h-3.5" />
+                            <span>Clearance Tag</span>
+                          </button>
+                        )}
+                        <button
+                          type="button"
+                          onClick={() => {
+                            if (b.product_id) {
+                              setSelectedProductId(b.product_id);
+                              setQuantityChange(-b.quantity);
+                              setAdjustReason(isExpired ? "DAMAGE_OR_EXPIRY" : "VENDOR_RETURN");
+                              setAdjustNotes(`Batch ${b.batch_number} expired on ${b.expiry_date}`);
+                              setIsAdjustModalOpen(true);
+                            }
+                          }}
+                          className="px-2.5 py-1.5 rounded-lg text-xs font-semibold bg-rose-500/15 border border-rose-500/30 text-rose-300 flex items-center gap-1 active:scale-95"
+                        >
+                          <Trash2 className="w-3.5 h-3.5" />
+                          <span>{isExpired ? "Write-off" : "Vendor Return"}</span>
+                        </button>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
             </div>
           </div>
         )
@@ -404,8 +601,8 @@ export const InventoryPage: React.FC = () => {
 
       {/* Manual Stock Adjustment Modal */}
       {isAdjustModalOpen && (
-        <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="bg-white dark:bg-slate-900 rounded-xl max-w-md w-full p-6 shadow-2xl border border-slate-200 dark:border-slate-800">
+        <div className="fixed inset-0 z-50 bg-[#080B10]/80 backdrop-blur-md flex items-end sm:items-center justify-center p-0 sm:p-4 pb-[calc(1rem+env(safe-area-inset-bottom,0px))]">
+          <div className="liquid-modal rounded-t-[28px] sm:rounded-2xl max-w-md w-full p-6 shadow-2xl border border-white/16 max-h-[90vh] overflow-y-auto">
             <div className="flex items-center justify-between pb-3 border-b border-slate-200 dark:border-slate-800 mb-4">
               <h3 className="text-base font-bold text-slate-900 dark:text-white">Authorized Stock Correction</h3>
               <button onClick={() => setIsAdjustModalOpen(false)} className="text-slate-400 hover:text-slate-600 text-xs">

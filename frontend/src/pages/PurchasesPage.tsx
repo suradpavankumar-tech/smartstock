@@ -1016,8 +1016,138 @@ export const PurchasesPage: React.FC = () => {
               </div>
             </div>
           ) : (
-            <div className="overflow-x-auto">
-              <table className="w-full text-left text-xs">
+            <>
+              {/* Mobile PO Card List View (<md) */}
+              <div className="block md:hidden divide-y divide-white/[0.08]">
+                {filtered.map((po) => {
+                  const matchingSup = suppliers.find((s) => s.id === po.supplier_id);
+                  const phone = po.supplier_phone || matchingSup?.phone;
+                  const cfg = STATUS_CONFIG[po.status] || STATUS_CONFIG.ORDERED;
+                  const orderedQty = po.items?.reduce((s, it) => s + (it.quantity_ordered || 0), 0) || 0;
+                  const receivedQty = po.items?.reduce((s, it) => s + (it.quantity_received || 0), 0) || 0;
+
+                  return (
+                    <div key={po.id} className="p-4 space-y-3">
+                      <div className="flex items-start justify-between gap-3">
+                        <div className="min-w-0">
+                          <button
+                            type="button"
+                            onClick={() => setDetailPO(po)}
+                            className="font-mono font-bold text-sm text-[#F8FAFC] hover:text-[#6EE7B7] transition-colors tabular-nums text-left flex items-center gap-1.5"
+                          >
+                            <span>{po.po_number}</span>
+                            <span className="text-[10px] font-normal font-sans text-[#A1AEBB]">
+                              ({po.items?.length || 0} {(po.items?.length || 0) === 1 ? "item" : "items"})
+                            </span>
+                          </button>
+                          <div className="font-semibold text-[#F8FAFC] text-[13px] truncate mt-1">
+                            <KannadaText
+                              text={po.supplier_name || matchingSup?.name || "Supplier"}
+                            />
+                          </div>
+                          {phone && (
+                            <div className="text-[11px] font-mono text-[#A1AEBB] mt-0.5">
+                              {phone}
+                            </div>
+                          )}
+                        </div>
+
+                        <div className="text-right shrink-0">
+                          <span
+                            className={`inline-flex items-center gap-1.5 px-2 py-0.5 rounded-lg text-[10px] font-bold border ${cfg.badge}`}
+                          >
+                            <span className={`w-1.5 h-1.5 rounded-full ${cfg.dot}`} />
+                            {tData(cfg.label)}
+                          </span>
+                          <div className="font-mono font-bold text-sm text-[#F8FAFC] mt-1 tabular-nums">
+                            {formatMoney(po.total_amount)}
+                          </div>
+                        </div>
+                      </div>
+
+                      <div className="grid grid-cols-2 gap-2 text-xs bg-white/[0.02] p-2.5 rounded-xl border border-white/[0.06]">
+                        <div>
+                          <span className="text-[10px] text-[#A1AEBB] uppercase tracking-wider block">
+                            Order Date / ETA
+                          </span>
+                          <span className="font-mono text-[11px] text-[#F8FAFC]/90">
+                            {po.order_date}
+                          </span>
+                          {po.expected_delivery_date && (
+                            <span className="block text-[10px] text-[#A1AEBB]">
+                              ETA: {po.expected_delivery_date}
+                            </span>
+                          )}
+                        </div>
+
+                        <div className="text-right">
+                          <span className="text-[10px] text-[#A1AEBB] uppercase tracking-wider block">
+                            Fill Progress
+                          </span>
+                          <span className="font-mono text-[11px] font-bold text-[#7DD3FC]">
+                            {Number(receivedQty.toFixed(1))} / {Number(orderedQty.toFixed(1))} units
+                          </span>
+                          {orderedQty > 0 && (
+                            <div className="w-full bg-white/[0.08] h-1.5 rounded-full mt-1 overflow-hidden">
+                              <div
+                                className="h-full bg-[#6EE7B7] rounded-full transition-all"
+                                style={{
+                                  width: `${Math.min(100, Math.round((receivedQty / orderedQty) * 100))}%`,
+                                }}
+                              />
+                            </div>
+                          )}
+                        </div>
+                      </div>
+
+                      <div className="flex flex-wrap items-center justify-end gap-1.5 pt-1">
+                        <button
+                          type="button"
+                          onClick={() => setDetailPO(po)}
+                          className="px-2.5 py-1.5 rounded-lg text-xs font-medium text-[#A1AEBB] hover:text-[#F8FAFC] border border-white/[0.08] transition-colors"
+                          aria-label={`View ${po.po_number}`}
+                        >
+                          <Eye className="w-3.5 h-3.5 inline mr-1" />
+                          <span>Details</span>
+                        </button>
+
+                        <button
+                          type="button"
+                          onClick={() => handleSendWhatsApp(po)}
+                          className="liquid-btn-secondary inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-xs font-semibold text-[#6EE7B7]"
+                        >
+                          <MessageCircle className="w-3.5 h-3.5" />
+                          <span>WhatsApp</span>
+                        </button>
+
+                        <button
+                          type="button"
+                          onClick={() => setPrintPO(po)}
+                          className="liquid-btn-secondary inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-xs font-semibold text-[#A1AEBB]"
+                        >
+                          <Printer className="w-3.5 h-3.5 text-[#7DD3FC]" />
+                          <span>Indent</span>
+                        </button>
+
+                        {po.status !== "COMPLETED" && po.status !== "CANCELLED" && (
+                          <button
+                            type="button"
+                            onClick={() => openReceiveModal(po)}
+                            className="liquid-btn-primary inline-flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs font-bold"
+                          >
+                            <PackageCheck className="w-3.5 h-3.5" />
+                            <span>Receive</span>
+                          </button>
+                        )}
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+
+              {/* Desktop Table View (>=md) */}
+              <div className="hidden md:block overflow-x-auto">
+                <table className="w-full text-left text-xs">
                 <thead className="bg-[#080B10]/35 border-b border-white/[0.08] text-[10.5px] text-[#A1AEBB] font-semibold uppercase tracking-[0.1em]">
                   <tr>
                     <th className="px-4 sm:px-6 py-3 whitespace-nowrap">PO Number</th>
@@ -1161,6 +1291,7 @@ export const PurchasesPage: React.FC = () => {
                 </tbody>
               </table>
             </div>
+            </>
           )}
         </div>
       </div>
@@ -1168,8 +1299,8 @@ export const PurchasesPage: React.FC = () => {
       {/* PO Detail & Line Items Modal (Portalled) */}
       {detailPO &&
         createPortal(
-          <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#080B10]/80 backdrop-blur-md p-4 overflow-y-auto">
-            <div className="liquid-modal max-w-2xl w-full p-6 text-[#F8FAFC] space-y-5">
+          <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-[#080B10]/80 backdrop-blur-md p-0 sm:p-4 pb-[calc(1rem+env(safe-area-inset-bottom,0px))] sm:pb-4 overflow-y-auto">
+            <div className="liquid-modal max-w-2xl w-full p-5 sm:p-6 text-[#F8FAFC] space-y-5 rounded-t-[28px] sm:rounded-2xl max-h-[90vh] overflow-y-auto">
               <div className="flex items-start justify-between pb-3 border-b border-white/[0.08]">
                 <div className="flex items-center gap-3">
                   <div className="w-9 h-9 rounded-full bg-[#080B10] border border-[#5EEAD4]/40 text-[#6EE7B7] flex items-center justify-center shrink-0">
@@ -1330,8 +1461,8 @@ export const PurchasesPage: React.FC = () => {
       {/* Post-Creation Supplier Transmission Modal (Portalled) */}
       {transmittedPO &&
         createPortal(
-          <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#080B10]/80 backdrop-blur-md p-4 overflow-y-auto">
-            <div className="liquid-modal max-w-lg w-full p-6 text-[#F8FAFC] space-y-4 max-h-[92vh] overflow-y-auto">
+          <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-[#080B10]/80 backdrop-blur-md p-0 sm:p-4 pb-[calc(1rem+env(safe-area-inset-bottom,0px))] sm:pb-4 overflow-y-auto">
+            <div className="liquid-modal max-w-lg w-full p-5 sm:p-6 text-[#F8FAFC] space-y-4 rounded-t-[28px] sm:rounded-2xl max-h-[90vh] overflow-y-auto">
               <div className="flex items-start justify-between pb-3 border-b border-white/[0.08]">
                 <div className="flex items-center gap-3">
                   <div className="w-9 h-9 rounded-full bg-[#6EE7B7]/15 border border-[#5EEAD4]/40 text-[#6EE7B7] flex items-center justify-center shrink-0">
@@ -1504,8 +1635,8 @@ export const PurchasesPage: React.FC = () => {
       {/* Formal Printable Purchase Order Sheet Modal (Portalled) */}
       {printPO &&
         createPortal(
-          <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#080B10]/85 backdrop-blur-md p-4 overflow-y-auto">
-            <div className="liquid-modal max-w-3xl w-full max-h-[94vh] flex flex-col overflow-hidden">
+          <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-[#080B10]/85 backdrop-blur-md p-0 sm:p-4 pb-[calc(1rem+env(safe-area-inset-bottom,0px))] sm:pb-4 overflow-y-auto">
+            <div className="liquid-modal max-w-3xl w-full max-h-[92vh] rounded-t-[28px] sm:rounded-2xl flex flex-col overflow-hidden">
               {/* Modal action bar (hidden during print) */}
               <div className="no-print px-5 py-3.5 border-b border-white/[0.1] flex items-center justify-between">
                 <div className="flex items-center gap-2.5">
@@ -1747,8 +1878,8 @@ export const PurchasesPage: React.FC = () => {
       {/* New Purchase Order Modal (Portalled) */}
       {isNewOrderModalOpen &&
         createPortal(
-          <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#080B10]/80 backdrop-blur-md p-4 overflow-y-auto">
-            <div className="liquid-modal max-w-2xl w-full p-6 text-[#F8FAFC] space-y-4 max-h-[92vh] overflow-y-auto">
+          <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-[#080B10]/80 backdrop-blur-md p-0 sm:p-4 pb-[calc(1rem+env(safe-area-inset-bottom,0px))] sm:pb-4 overflow-y-auto">
+            <div className="liquid-modal max-w-2xl w-full p-5 sm:p-6 text-[#F8FAFC] space-y-4 rounded-t-[28px] sm:rounded-2xl max-h-[90vh] overflow-y-auto">
               <div className="flex items-start justify-between pb-3 border-b border-white/[0.08]">
                 <div className="flex items-center gap-3">
                   <div className="w-8 h-8 rounded-full bg-[#080B10] border border-[#5EEAD4]/40 text-[#6EE7B7] flex items-center justify-center shrink-0">
@@ -2064,8 +2195,8 @@ export const PurchasesPage: React.FC = () => {
       {/* Receive Partial / Full Delivery Modal (Portalled) */}
       {receivingPO &&
         createPortal(
-          <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#080B10]/80 backdrop-blur-md p-4 overflow-y-auto">
-            <div className="liquid-modal max-w-2xl w-full p-6 text-[#F8FAFC] space-y-4 max-h-[92vh] overflow-y-auto">
+          <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-[#080B10]/80 backdrop-blur-md p-0 sm:p-4 pb-[calc(1rem+env(safe-area-inset-bottom,0px))] sm:pb-4 overflow-y-auto">
+            <div className="liquid-modal max-w-2xl w-full p-5 sm:p-6 text-[#F8FAFC] space-y-4 rounded-t-[28px] sm:rounded-2xl max-h-[90vh] overflow-y-auto">
               <div className="flex items-start justify-between pb-3 border-b border-white/[0.08]">
                 <div className="flex items-center gap-3">
                   <div className="w-8 h-8 rounded-full bg-[#080B10] border border-[#7DD3FC]/40 text-[#7DD3FC] flex items-center justify-center shrink-0">
@@ -2232,8 +2363,8 @@ export const PurchasesPage: React.FC = () => {
       {/* Quick Add Supplier Modal (Portalled) */}
       {isQuickSupplierOpen &&
         createPortal(
-          <div className="fixed inset-0 z-[60] flex items-center justify-center bg-[#080B10]/85 backdrop-blur-md p-4">
-            <div className="liquid-modal max-w-sm w-full p-6 text-[#F8FAFC] space-y-4">
+          <div className="fixed inset-0 z-[60] flex items-end sm:items-center justify-center bg-[#080B10]/85 backdrop-blur-md p-0 sm:p-4 pb-[calc(1rem+env(safe-area-inset-bottom,0px))] sm:pb-4 overflow-y-auto">
+            <div className="liquid-modal max-w-sm w-full p-5 sm:p-6 text-[#F8FAFC] space-y-4 rounded-t-[28px] sm:rounded-2xl max-h-[90vh] overflow-y-auto">
               <div className="flex items-start justify-between pb-3 border-b border-white/[0.08]">
                 <div>
                   <h3 className="text-sm font-bold text-[#F8FAFC]">Quick Add Supplier</h3>

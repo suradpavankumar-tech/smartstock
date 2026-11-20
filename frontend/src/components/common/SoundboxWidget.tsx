@@ -63,7 +63,7 @@ export const SoundboxWidget: React.FC = () => {
       {isOpen && (
         <>
           <div className="fixed inset-0 z-30" onClick={() => setIsOpen(false)} />
-          <div className="absolute right-0 mt-2 w-72 z-40 liquid-modal p-4 text-xs space-y-3.5">
+          <div className="absolute right-0 mt-2 w-[min(calc(100vw-1.5rem),18rem)] z-40 liquid-modal p-4 text-xs space-y-3.5">
             {/* Header */}
             <div className="flex items-center justify-between pb-2 border-b border-white/10">
               <div className="flex items-center gap-1.5 font-bold text-[#F8FAFC]">

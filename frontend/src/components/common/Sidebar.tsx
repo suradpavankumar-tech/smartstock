@@ -120,7 +120,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
                 SmartStock
               </h1>
               <span className="px-1.5 py-0.2 text-[9px] font-bold rounded-full bg-[#6EE7B7]/15 text-[#6EE7B7] border border-[#5EEAD4]/40 shadow-[0_0_8px_rgba(94,234,212,0.25)]">
-                Liquid Glass
+                RETAIL
               </span>
             </div>
             <p className="text-[11px] text-[#A1AEBB] font-medium truncate flex items-center gap-1.5 mt-0.5">

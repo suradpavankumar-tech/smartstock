@@ -100,8 +100,8 @@ export const Gstr1ExportModal: React.FC<Gstr1ExportModalProps> = ({
   if (!isOpen) return null;
 
   return createPortal(
-    <div className="fixed inset-0 z-50 bg-[#080B10]/80 backdrop-blur-md flex items-center justify-center p-4">
-      <div className="liquid-modal w-full max-w-4xl max-h-[88vh] flex flex-col overflow-hidden text-[#F8FAFC]">
+    <div className="fixed inset-0 z-50 bg-[#080B10]/80 backdrop-blur-md flex items-end sm:items-center justify-center p-0 sm:p-4 pb-[calc(1rem+env(safe-area-inset-bottom,0px))] sm:pb-4 overflow-y-auto">
+      <div className="liquid-modal w-full max-w-4xl max-h-[90vh] rounded-t-[28px] sm:rounded-2xl flex flex-col overflow-hidden text-[#F8FAFC]">
         {/* Header */}
         <div className="px-6 py-4 border-b border-white/[0.08] flex items-center justify-between bg-gradient-to-r from-[#5EEAD4]/10 via-[#6EE7B7]/[0.06] to-transparent">
           <div className="flex items-center gap-3.5 min-w-0">

@@ -152,36 +152,57 @@ export const SyncStatusPage: React.FC = () => {
             Queue is empty. All counter sales and transactions have been synced to the database.
           </div>
         ) : (
-          <div className="overflow-x-auto">
-            <table className="w-full text-left text-xs">
-              <thead className="bg-slate-50 dark:bg-slate-800/60 border-b border-slate-200 dark:border-slate-800 text-slate-500">
-                <tr>
-                  <th className="py-2.5 px-4 font-semibold">Entity Type</th>
-                  <th className="py-2.5 px-4 font-semibold">Action</th>
-                  <th className="py-2.5 px-4 font-semibold">Idempotency Key</th>
-                  <th className="py-2.5 px-4 font-semibold">Buffered At</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
-                {queue.map((item, idx) => (
-                  <tr key={idx} className="hover:bg-slate-50/50 dark:hover:bg-slate-800/30">
-                    <td className="py-3 px-4 font-medium text-slate-900 dark:text-white">
-                      {item.action_type}
-                    </td>
-                    <td className="py-3 px-4 font-mono text-slate-600 dark:text-slate-400">
+          <>
+            {/* Mobile Queue Cards (<md) */}
+            <div className="block md:hidden divide-y divide-slate-100 dark:divide-slate-800 -mx-5 -mb-5">
+              {queue.map((item, idx) => (
+                <div key={idx} className="p-3.5 space-y-1.5">
+                  <div className="flex items-center justify-between gap-2">
+                    <span className="font-bold text-xs text-slate-900 dark:text-white">{item.action_type}</span>
+                    <span className="inline-flex px-2 py-0.5 rounded text-[10px] font-bold bg-amber-50 text-amber-700 dark:bg-amber-950/40 dark:text-amber-400 border border-amber-200 dark:border-amber-800">
                       QUEUED
-                    </td>
-                    <td className="py-3 px-4 font-mono text-[11px] text-slate-500">
-                      {item.client_uuid}
-                    </td>
-                    <td className="py-3 px-4 text-slate-400 font-mono">
-                      {new Date(item.created_at_client).toLocaleTimeString()}
-                    </td>
+                    </span>
+                  </div>
+                  <div className="flex items-center justify-between text-[11px] font-mono text-slate-500">
+                    <span className="truncate max-w-[200px]" title={item.client_uuid}>Key: {item.client_uuid}</span>
+                    <span>{new Date(item.created_at_client).toLocaleTimeString()}</span>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            {/* Desktop Table View (>=md) */}
+            <div className="hidden md:block overflow-x-auto">
+              <table className="w-full text-left text-xs">
+                <thead className="bg-slate-50 dark:bg-slate-800/60 border-b border-slate-200 dark:border-slate-800 text-slate-500">
+                  <tr>
+                    <th className="py-2.5 px-4 font-semibold">Entity Type</th>
+                    <th className="py-2.5 px-4 font-semibold">Action</th>
+                    <th className="py-2.5 px-4 font-semibold">Idempotency Key</th>
+                    <th className="py-2.5 px-4 font-semibold">Buffered At</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+                </thead>
+                <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
+                  {queue.map((item, idx) => (
+                    <tr key={idx} className="hover:bg-slate-50/50 dark:hover:bg-slate-800/30">
+                      <td className="py-3 px-4 font-medium text-slate-900 dark:text-white">
+                        {item.action_type}
+                      </td>
+                      <td className="py-3 px-4 font-mono text-slate-600 dark:text-slate-400">
+                        QUEUED
+                      </td>
+                      <td className="py-3 px-4 font-mono text-[11px] text-slate-500">
+                        {item.client_uuid}
+                      </td>
+                      <td className="py-3 px-4 text-slate-400 font-mono">
+                        {new Date(item.created_at_client).toLocaleTimeString()}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </>
         )}
       </div>
     </div>

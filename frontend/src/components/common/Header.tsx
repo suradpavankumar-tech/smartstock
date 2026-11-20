@@ -283,32 +283,32 @@ export const Header: React.FC<HeaderProps> = ({ onToggleMobileMenu, onNavigate }
   }, []);
 
   return (
-    <header className="h-16 floating-header rounded-2xl mx-0 sm:mx-1 mt-3.5 px-4 sm:px-6 sticky top-3.5 z-30 transition-all flex items-center justify-between">
+    <header className="h-14 sm:h-16 floating-header rounded-2xl mx-0 sm:mx-1 mt-2 sm:mt-3.5 px-3 sm:px-6 sticky top-2 sm:top-3.5 z-30 transition-all flex items-center justify-between gap-2">
       {/* Left: Mobile hamburger & shop badge */}
-      <div className="flex items-center gap-3">
+      <div className="flex items-center gap-2 sm:gap-3 min-w-0">
         <button
           onClick={onToggleMobileMenu}
-          className="p-2 text-[#A1AEBB] hover:text-[#F8FAFC] rounded-lg hover:bg-white/[0.06] lg:hidden active:scale-[0.98]"
+          className="p-1.5 sm:p-2 text-[#A1AEBB] hover:text-[#F8FAFC] rounded-lg hover:bg-white/[0.06] lg:hidden active:scale-[0.98] shrink-0"
         >
           <Menu className="w-5 h-5" />
         </button>
 
-        <div className="flex items-center gap-2.5">
-          <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-[#5EEAD4]/20 via-[#6EE7B7]/10 to-transparent text-[#6EE7B7] border border-[#5EEAD4]/40 flex items-center justify-center font-bold shadow-[0_0_12px_rgba(94,234,212,0.2)]">
+        <div className="flex items-center gap-2 sm:gap-2.5 min-w-0">
+          <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-gradient-to-br from-[#5EEAD4]/20 via-[#6EE7B7]/10 to-transparent text-[#6EE7B7] border border-[#5EEAD4]/40 flex items-center justify-center font-bold shadow-[0_0_12px_rgba(94,234,212,0.2)] shrink-0">
             <Store className="w-4 h-4" />
           </div>
-          <div>
-            <div className="flex items-center gap-2">
-              <span className="text-sm font-extrabold text-[#F8FAFC] tracking-tight">
+          <div className="min-w-0">
+            <div className="flex items-center gap-1.5 sm:gap-2 min-w-0">
+              <span className="text-xs sm:text-sm font-extrabold text-[#F8FAFC] tracking-tight truncate max-w-[120px] xs:max-w-[160px] sm:max-w-xs md:max-w-md">
                 {currentBusiness?.name || "SmartStock Workspace"}
               </span>
               {currentBusiness?.gstin && (
-                <span className="hidden sm:inline-block px-1.5 py-0.5 text-[10px] font-mono liquid-pill text-[#A1AEBB] rounded-md">
+                <span className="hidden md:inline-block px-1.5 py-0.5 text-[10px] font-mono liquid-pill text-[#A1AEBB] rounded-md shrink-0">
                   GST: {currentBusiness.gstin}
                 </span>
               )}
             </div>
-            <div className="text-[11px] text-[#A1AEBB]">
+            <div className="text-[10px] sm:text-[11px] text-[#A1AEBB] truncate max-w-[120px] xs:max-w-[160px] sm:max-w-xs md:max-w-md">
               {currentBusiness?.city || "Haveri"}, {currentBusiness?.district || "Karnataka"} • <span className="text-[#6EE7B7] font-semibold">Private Workspace</span>
             </div>
           </div>
@@ -316,12 +316,12 @@ export const Header: React.FC<HeaderProps> = ({ onToggleMobileMenu, onNavigate }
 
         {/* Multi-business switcher (only if user has > 1 shop) */}
         {businesses.length > 1 && (
-          <div className="relative ml-2">
+          <div className="relative ml-1 sm:ml-2 shrink-0">
             <select
               value={currentBusiness?.id}
               onChange={(e) => switchBusiness(Number(e.target.value))}
               aria-label="Switch Active Shop"
-              className="text-xs font-medium liquid-pill rounded-lg px-2 py-1 text-[#F8FAFC] focus:ring-1 focus:ring-[#5EEAD4] focus:border-[#5EEAD4]"
+              className="text-xs font-medium liquid-pill rounded-lg px-2 py-1 text-[#F8FAFC] focus:ring-1 focus:ring-[#5EEAD4] focus:border-[#5EEAD4] max-w-[120px] sm:max-w-none truncate"
             >
               {businesses.map((b) => (
                 <option key={b.id} value={b.id} className="bg-[#080B10] text-[#F8FAFC]">
@@ -334,7 +334,7 @@ export const Header: React.FC<HeaderProps> = ({ onToggleMobileMenu, onNavigate }
       </div>
 
       {/* Right: Sync pill, Notification Bell, Language, Theme */}
-      <div className="flex items-center gap-2 sm:gap-3">
+      <div className="flex items-center gap-1.5 sm:gap-2.5 shrink-0">
         {/* UPI Soundbox Widget */}
         <SoundboxWidget />
 
@@ -386,7 +386,7 @@ export const Header: React.FC<HeaderProps> = ({ onToggleMobileMenu, onNavigate }
           </button>
 
           {notificationOpen && (
-            <div className="absolute right-0 mt-3 w-80 sm:w-96 max-h-[32rem] liquid-modal rounded-2xl shadow-[0_20px_60px_rgba(0,0,0,0.7)] border border-white/20 z-50 overflow-hidden flex flex-col backdrop-blur-2xl bg-[#080B10]/95 animate-liquid-enter">
+            <div className="absolute right-0 mt-3 w-[min(calc(100vw-1.5rem),24rem)] max-h-[32rem] liquid-modal rounded-2xl shadow-[0_20px_60px_rgba(0,0,0,0.7)] border border-white/20 z-50 overflow-hidden flex flex-col backdrop-blur-2xl bg-[#080B10]/95 animate-liquid-enter">
               {/* Header */}
               <div className="p-3.5 border-b border-white/10 flex items-center justify-between bg-white/[0.02]">
                 <div className="flex items-center gap-2.5">
@@ -621,7 +621,7 @@ export const Header: React.FC<HeaderProps> = ({ onToggleMobileMenu, onNavigate }
           </button>
 
           {langDropdownOpen && (
-            <div className="absolute right-0 mt-2 w-64 liquid-modal rounded-2xl p-2 z-50">
+            <div className="absolute right-0 mt-2 w-[min(calc(100vw-1.5rem),16rem)] liquid-modal rounded-2xl p-2 z-50">
               <div className="text-[11px] font-bold text-[#A1AEBB] uppercase tracking-wider px-2 py-1">
                 Select Language / ಭಾಷೆ
               </div>

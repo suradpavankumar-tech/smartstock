@@ -207,10 +207,10 @@ export const ReconciliationPage: React.FC = () => {
                 </div>
               </div>
 
-              <div className="flex items-center gap-2">
+              <div className="flex flex-wrap items-center gap-2">
                 <button
                   onClick={() => window.print()}
-                  className="px-3 py-1.5 border border-slate-300 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800 rounded-xl text-xs font-semibold text-slate-700 dark:text-slate-300 flex items-center gap-1.5"
+                  className="px-3 py-1.5 border border-slate-300 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800 rounded-xl text-xs font-semibold text-slate-700 dark:text-slate-300 flex items-center justify-center gap-1.5 flex-1 sm:flex-initial"
                 >
                   <Printer className="w-3.5 h-3.5" />
                   <span>Print Audit Sheet</span>
@@ -218,7 +218,7 @@ export const ReconciliationPage: React.FC = () => {
 
                 <button
                   onClick={() => setActiveSession(null)}
-                  className="px-3 py-1.5 border border-slate-300 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800 rounded-xl text-xs font-semibold text-slate-700 dark:text-slate-300"
+                  className="px-3 py-1.5 border border-slate-300 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800 rounded-xl text-xs font-semibold text-slate-700 dark:text-slate-300 flex-1 sm:flex-initial text-center"
                 >
                   Back to Sessions
                 </button>
@@ -227,7 +227,7 @@ export const ReconciliationPage: React.FC = () => {
                   <button
                     onClick={handleApproveSession}
                     disabled={approving || sessionItems.length === 0}
-                    className="flex items-center gap-1.5 px-4 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold transition-all shadow-sm disabled:opacity-50"
+                    className="flex items-center justify-center gap-1.5 px-4 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold transition-all shadow-sm disabled:opacity-50 w-full sm:w-auto"
                   >
                     <Check className="w-4 h-4" />
                     <span>{approving ? "Applying..." : "Approve & Update Inventory"}</span>
@@ -355,73 +355,147 @@ export const ReconciliationPage: React.FC = () => {
               </form>
             )}
 
-            {/* Session Items Variance Table */}
+            {/* Session Items Variance Table & Cards */}
             <div className="border border-slate-200 dark:border-slate-800 rounded-2xl overflow-hidden shadow-xs">
-              <table className="w-full text-left text-xs divide-y divide-slate-200 dark:divide-slate-800">
-                <thead className="bg-slate-50 dark:bg-slate-800/60 text-slate-500 font-semibold uppercase tracking-wider">
-                  <tr>
-                    <th className="px-4 py-3">Product Name</th>
-                    <th className="px-4 py-3 text-right">Expected (System)</th>
-                    <th className="px-4 py-3 text-right">Counted (Physical)</th>
-                    <th className="px-4 py-3 text-right">Variance Units</th>
-                    <th className="px-4 py-3 text-right">Monetary Variance</th>
-                    <th className="px-4 py-3 text-center">Variance Reason</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
-                  {sessionItems.length === 0 ? (
-                    <tr>
-                      <td colSpan={6} className="p-8 text-center text-slate-400">
-                        No products counted yet in this audit session. Use the form above to record physical counts.
-                      </td>
-                    </tr>
-                  ) : (
-                    sessionItems.map((item) => (
-                      <tr key={item.id} className="hover:bg-slate-50/50 dark:hover:bg-slate-800/30 transition-colors">
-                        <td className="px-4 py-3 font-bold text-slate-900 dark:text-white">
-                          <div>{item.product_name}</div>
-                          {item.notes && <div className="text-[10px] text-slate-400 font-normal mt-0.5">{item.notes}</div>}
-                        </td>
-                        <td className="px-4 py-3 text-right font-mono text-slate-600 dark:text-slate-400">
-                          {item.expected_quantity} {item.unit}
-                        </td>
-                        <td className="px-4 py-3 text-right font-mono font-bold text-slate-900 dark:text-white">
-                          {item.counted_quantity} {item.unit}
-                        </td>
-                        <td className="px-4 py-3 text-right font-mono font-bold">
-                          {item.variance_quantity === 0 ? (
-                            <span className="text-emerald-600 flex items-center justify-end gap-1">
-                              <CheckCircle2 className="w-3.5 h-3.5" /> 0
-                            </span>
-                          ) : item.variance_quantity < 0 ? (
-                            <span className="text-rose-600">{item.variance_quantity} {item.unit}</span>
-                          ) : (
-                            <span className="text-blue-600">+{item.variance_quantity} {item.unit}</span>
+              {/* Mobile Item Cards (<md) */}
+              <div className="block md:hidden divide-y divide-slate-100 dark:divide-slate-800">
+                {sessionItems.length === 0 ? (
+                  <div className="p-8 text-center text-slate-400 text-xs">
+                    No products counted yet in this audit session. Use the form above to record physical counts.
+                  </div>
+                ) : (
+                  sessionItems.map((item) => (
+                    <div key={item.id} className="p-4 space-y-2.5">
+                      <div className="flex items-start justify-between gap-2">
+                        <div className="min-w-0">
+                          <div className="font-bold text-slate-900 dark:text-white text-sm truncate">
+                            {item.product_name}
+                          </div>
+                          {item.notes && (
+                            <p className="text-[11px] text-slate-400 mt-0.5">{item.notes}</p>
                           )}
-                        </td>
-                        <td className="px-4 py-3 text-right font-mono font-black">
-                          {item.variance_value === 0 ? (
-                            <span className="text-emerald-600">₹0.00</span>
-                          ) : item.variance_value < 0 ? (
-                            <span className="text-rose-600">-₹{Math.abs(item.variance_value).toFixed(2)}</span>
-                          ) : (
-                            <span className="text-blue-600">+₹{item.variance_value.toFixed(2)}</span>
-                          )}
-                        </td>
-                        <td className="px-4 py-3 text-center">
-                          <span className={`inline-flex px-2 py-0.5 rounded text-[10px] font-bold ${
+                        </div>
+                        <span
+                          className={`inline-flex px-2 py-0.5 rounded text-[10px] font-bold shrink-0 ${
                             item.variance_quantity === 0
                               ? "bg-emerald-50 text-emerald-700 dark:bg-emerald-950/60 dark:text-emerald-300"
                               : "bg-amber-50 text-amber-700 dark:bg-amber-950/60 dark:text-amber-300 border border-amber-200 dark:border-amber-800"
-                          }`}>
-                            {item.reason_code || "EXACT_MATCH"}
+                          }`}
+                        >
+                          {item.reason_code || "EXACT_MATCH"}
+                        </span>
+                      </div>
+
+                      <div className="grid grid-cols-2 gap-2 text-xs bg-slate-50 dark:bg-slate-800/40 p-2.5 rounded-xl font-mono">
+                        <div>
+                          <span className="text-[10px] font-sans text-slate-400 uppercase tracking-wider block">
+                            Expected vs Counted
                           </span>
+                          <span className="text-slate-600 dark:text-slate-400">
+                            Sys: {item.expected_quantity} {item.unit}
+                          </span>
+                          <span className="block font-bold text-slate-900 dark:text-white">
+                            Act: {item.counted_quantity} {item.unit}
+                          </span>
+                        </div>
+
+                        <div className="text-right">
+                          <span className="text-[10px] font-sans text-slate-400 uppercase tracking-wider block">
+                            Variance (Loss/Gain)
+                          </span>
+                          <div className="font-bold">
+                            {item.variance_quantity === 0 ? (
+                              <span className="text-emerald-600">0 {item.unit}</span>
+                            ) : item.variance_quantity < 0 ? (
+                              <span className="text-rose-600">{item.variance_quantity} {item.unit}</span>
+                            ) : (
+                              <span className="text-blue-600">+{item.variance_quantity} {item.unit}</span>
+                            )}
+                          </div>
+                          <div className="font-black text-xs">
+                            {item.variance_value === 0 ? (
+                              <span className="text-emerald-600">₹0.00</span>
+                            ) : item.variance_value < 0 ? (
+                              <span className="text-rose-600">-₹{Math.abs(item.variance_value).toFixed(2)}</span>
+                            ) : (
+                              <span className="text-blue-600">+₹{item.variance_value.toFixed(2)}</span>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  ))
+                )}
+              </div>
+
+              {/* Desktop Table View (>=md) */}
+              <div className="hidden md:block overflow-x-auto">
+                <table className="w-full text-left text-xs divide-y divide-slate-200 dark:divide-slate-800">
+                  <thead className="bg-slate-50 dark:bg-slate-800/60 text-slate-500 font-semibold uppercase tracking-wider">
+                    <tr>
+                      <th className="px-4 py-3">Product Name</th>
+                      <th className="px-4 py-3 text-right">Expected (System)</th>
+                      <th className="px-4 py-3 text-right">Counted (Physical)</th>
+                      <th className="px-4 py-3 text-right">Variance Units</th>
+                      <th className="px-4 py-3 text-right">Monetary Variance</th>
+                      <th className="px-4 py-3 text-center">Variance Reason</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
+                    {sessionItems.length === 0 ? (
+                      <tr>
+                        <td colSpan={6} className="p-8 text-center text-slate-400">
+                          No products counted yet in this audit session. Use the form above to record physical counts.
                         </td>
                       </tr>
-                    ))
-                  )}
-                </tbody>
-              </table>
+                    ) : (
+                      sessionItems.map((item) => (
+                        <tr key={item.id} className="hover:bg-slate-50/50 dark:hover:bg-slate-800/30 transition-colors">
+                          <td className="px-4 py-3 font-bold text-slate-900 dark:text-white">
+                            <div>{item.product_name}</div>
+                            {item.notes && <div className="text-[10px] text-slate-400 font-normal mt-0.5">{item.notes}</div>}
+                          </td>
+                          <td className="px-4 py-3 text-right font-mono text-slate-600 dark:text-slate-400">
+                            {item.expected_quantity} {item.unit}
+                          </td>
+                          <td className="px-4 py-3 text-right font-mono font-bold text-slate-900 dark:text-white">
+                            {item.counted_quantity} {item.unit}
+                          </td>
+                          <td className="px-4 py-3 text-right font-mono font-bold">
+                            {item.variance_quantity === 0 ? (
+                              <span className="text-emerald-600 flex items-center justify-end gap-1">
+                                <CheckCircle2 className="w-3.5 h-3.5" /> 0
+                              </span>
+                            ) : item.variance_quantity < 0 ? (
+                              <span className="text-rose-600">{item.variance_quantity} {item.unit}</span>
+                            ) : (
+                              <span className="text-blue-600">+{item.variance_quantity} {item.unit}</span>
+                            )}
+                          </td>
+                          <td className="px-4 py-3 text-right font-mono font-black">
+                            {item.variance_value === 0 ? (
+                              <span className="text-emerald-600">₹0.00</span>
+                            ) : item.variance_value < 0 ? (
+                              <span className="text-rose-600">-₹{Math.abs(item.variance_value).toFixed(2)}</span>
+                            ) : (
+                              <span className="text-blue-600">+₹{item.variance_value.toFixed(2)}</span>
+                            )}
+                          </td>
+                          <td className="px-4 py-3 text-center">
+                            <span className={`inline-flex px-2 py-0.5 rounded text-[10px] font-bold ${
+                              item.variance_quantity === 0
+                                ? "bg-emerald-50 text-emerald-700 dark:bg-emerald-950/60 dark:text-emerald-300"
+                                : "bg-amber-50 text-amber-700 dark:bg-amber-950/60 dark:text-amber-300 border border-amber-200 dark:border-amber-800"
+                            }`}>
+                              {item.reason_code || "EXACT_MATCH"}
+                            </span>
+                          </td>
+                        </tr>
+                      ))
+                    )}
+                  </tbody>
+                </table>
+              </div>
             </div>
           </div>
         </div>
@@ -445,64 +519,127 @@ export const ReconciliationPage: React.FC = () => {
               onAction={handleStartSession}
             />
           ) : (
-            <div className="overflow-x-auto">
-              <table className="w-full text-left text-xs divide-y divide-slate-200 dark:divide-slate-800">
-                <thead className="bg-slate-50 dark:bg-slate-800/60 text-slate-500 font-semibold uppercase tracking-wider">
-                  <tr>
-                    <th className="px-5 py-3.5">Audit Code</th>
-                    <th className="px-5 py-3.5">Date Started</th>
-                    <th className="px-5 py-3.5 text-center">Status</th>
-                    <th className="px-5 py-3.5 text-right">Items Counted</th>
-                    <th className="px-5 py-3.5 text-right">Total Net Variance</th>
-                    <th className="px-5 py-3.5 text-right">Action</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
-                  {sessions.map((s) => (
-                    <tr key={s.id} className="hover:bg-slate-50/70 dark:hover:bg-slate-800/40 transition-colors">
-                      <td className="px-5 py-3.5 font-mono font-bold text-slate-900 dark:text-white">
-                        {s.session_code}
-                      </td>
-                      <td className="px-5 py-3.5 text-slate-500">
-                        {new Date(s.started_at).toLocaleDateString("en-IN", {
-                          day: "2-digit",
-                          month: "short",
-                          year: "numeric",
-                        })}
-                      </td>
-                      <td className="px-5 py-3.5 text-center">
-                        {s.status === "COMPLETED" ? (
-                          <span className="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-50 text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800">
-                            <CheckCircle2 className="w-3 h-3 mr-1" />
-                            Completed
-                          </span>
-                        ) : (
-                          <span className="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold bg-amber-50 text-amber-700 dark:bg-amber-950/40 dark:text-amber-400 border border-amber-200 dark:border-amber-800">
-                            <Clock className="w-3 h-3 mr-1" />
-                            In Progress
-                          </span>
-                        )}
-                      </td>
-                      <td className="px-5 py-3.5 text-right font-medium text-slate-700 dark:text-slate-300 font-mono">
-                        {s.total_items_counted || 0}
-                      </td>
-                      <td className="px-5 py-3.5 text-right font-mono font-bold text-slate-900 dark:text-white">
-                        ₹{(s.total_variance_value || 0).toFixed(2)}
-                      </td>
-                      <td className="px-5 py-3.5 text-right">
-                        <button
-                          onClick={() => loadSessionDetail(s.id)}
-                          className="inline-flex items-center gap-1 px-3 py-1.5 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 rounded-lg text-xs font-bold transition-colors"
-                        >
-                          <span>{s.status === "IN_PROGRESS" ? "Continue Audit" : "View Report"}</span>
-                          <ArrowRight className="w-3.5 h-3.5" />
-                        </button>
-                      </td>
+            <>
+              {/* Mobile Sessions Cards (<md) */}
+              <div className="block md:hidden divide-y divide-slate-100 dark:divide-slate-800">
+                {sessions.map((s) => (
+                  <div key={s.id} className="p-4 space-y-3">
+                    <div className="flex items-center justify-between gap-2">
+                      <div className="flex items-center gap-2">
+                        <span className="font-mono font-bold text-slate-900 dark:text-white text-sm">
+                          {s.session_code}
+                        </span>
+                        <span className="text-[11px] text-slate-400">
+                          {new Date(s.started_at).toLocaleDateString("en-IN", {
+                            day: "2-digit",
+                            month: "short",
+                            year: "numeric",
+                          })}
+                        </span>
+                      </div>
+                      {s.status === "COMPLETED" ? (
+                        <span className="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-50 text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800 shrink-0">
+                          <CheckCircle2 className="w-3 h-3 mr-1" />
+                          Completed
+                        </span>
+                      ) : (
+                        <span className="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold bg-amber-50 text-amber-700 dark:bg-amber-950/40 dark:text-amber-400 border border-amber-200 dark:border-amber-800 shrink-0">
+                          <Clock className="w-3 h-3 mr-1" />
+                          In Progress
+                        </span>
+                      )}
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-2 text-xs bg-slate-50 dark:bg-slate-800/40 p-2.5 rounded-xl font-mono">
+                      <div>
+                        <span className="text-[10px] font-sans text-slate-400 uppercase tracking-wider block">
+                          Items Counted
+                        </span>
+                        <span className="font-bold text-slate-900 dark:text-white text-sm">
+                          {s.total_items_counted || 0}
+                        </span>
+                      </div>
+                      <div className="text-right">
+                        <span className="text-[10px] font-sans text-slate-400 uppercase tracking-wider block">
+                          Net Variance
+                        </span>
+                        <span className="font-black text-sm text-slate-900 dark:text-white">
+                          ₹{(s.total_variance_value || 0).toFixed(2)}
+                        </span>
+                      </div>
+                    </div>
+
+                    <button
+                      onClick={() => loadSessionDetail(s.id)}
+                      className="w-full flex items-center justify-center gap-1.5 py-2.5 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 active:scale-95 text-slate-800 dark:text-slate-200 rounded-xl text-xs font-bold transition-all"
+                    >
+                      <span>{s.status === "IN_PROGRESS" ? "Continue Audit" : "View Audit Report"}</span>
+                      <ArrowRight className="w-3.5 h-3.5" />
+                    </button>
+                  </div>
+                ))}
+              </div>
+
+              {/* Desktop Table View (>=md) */}
+              <div className="hidden md:block overflow-x-auto">
+                <table className="w-full text-left text-xs divide-y divide-slate-200 dark:divide-slate-800">
+                  <thead className="bg-slate-50 dark:bg-slate-800/60 text-slate-500 font-semibold uppercase tracking-wider">
+                    <tr>
+                      <th className="px-5 py-3.5">Audit Code</th>
+                      <th className="px-5 py-3.5">Date Started</th>
+                      <th className="px-5 py-3.5 text-center">Status</th>
+                      <th className="px-5 py-3.5 text-right">Items Counted</th>
+                      <th className="px-5 py-3.5 text-right">Total Net Variance</th>
+                      <th className="px-5 py-3.5 text-right">Action</th>
                     </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
+                  </thead>
+                  <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
+                    {sessions.map((s) => (
+                      <tr key={s.id} className="hover:bg-slate-50/70 dark:hover:bg-slate-800/40 transition-colors">
+                        <td className="px-5 py-3.5 font-mono font-bold text-slate-900 dark:text-white">
+                          {s.session_code}
+                        </td>
+                        <td className="px-5 py-3.5 text-slate-500">
+                          {new Date(s.started_at).toLocaleDateString("en-IN", {
+                            day: "2-digit",
+                            month: "short",
+                            year: "numeric",
+                          })}
+                        </td>
+                        <td className="px-5 py-3.5 text-center">
+                          {s.status === "COMPLETED" ? (
+                            <span className="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-50 text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800">
+                              <CheckCircle2 className="w-3 h-3 mr-1" />
+                              Completed
+                            </span>
+                          ) : (
+                            <span className="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold bg-amber-50 text-amber-700 dark:bg-amber-950/40 dark:text-amber-400 border border-amber-200 dark:border-amber-800">
+                              <Clock className="w-3 h-3 mr-1" />
+                              In Progress
+                            </span>
+                          )}
+                        </td>
+                        <td className="px-5 py-3.5 text-right font-medium text-slate-700 dark:text-slate-300 font-mono">
+                          {s.total_items_counted || 0}
+                        </td>
+                        <td className="px-5 py-3.5 text-right font-mono font-bold text-slate-900 dark:text-white">
+                          ₹{(s.total_variance_value || 0).toFixed(2)}
+                        </td>
+                        <td className="px-5 py-3.5 text-right">
+                          <button
+                            onClick={() => loadSessionDetail(s.id)}
+                            className="inline-flex items-center gap-1 px-3 py-1.5 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 rounded-lg text-xs font-bold transition-colors"
+                          >
+                            <span>{s.status === "IN_PROGRESS" ? "Continue Audit" : "View Report"}</span>
+                            <ArrowRight className="w-3.5 h-3.5" />
+                          </button>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </>
           )}
         </div>
       )}
